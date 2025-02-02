@@ -93,8 +93,8 @@
         }
         header img {
             border-radius: 50%;
-            width: 150px;
-            height: 150px;
+            width: 180px; /* Increased size */
+            height: 180px; /* Increased size */
             margin-top: 20px;
             border: 5px solid #1e3d72;
             animation: float 3s ease-in-out infinite;
@@ -210,9 +210,15 @@
             font-size: 1.2rem;
             border-radius: 50%;
             cursor: pointer;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, opacity 0.3s ease;
             display: none;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: scale(0);
+        }
+        #goToTop.show {
+            opacity: 1;
+            transform: scale(1);
         }
         #goToTop:hover {
             transform: scale(1.2);
@@ -253,10 +259,10 @@
             <i class="fas fa-bars"></i>
         </div>
         <div class="nav-links" id="navLinks">
-            <a href="#home">Home</a>
-            <a href="#skills">Skills</a>
-            <a href="#portfolio">Portfolio</a>
-            <a href="#contact">Contact</a>
+            <a href="#home" onclick="smoothScroll(event)">Home</a>
+            <a href="#skills" onclick="smoothScroll(event)">Skills</a>
+            <a href="#portfolio" onclick="smoothScroll(event)">Portfolio</a>
+            <a href="#contact" onclick="smoothScroll(event)">Contact</a>
         </div>
     </nav>
 
@@ -323,7 +329,7 @@
 
     <footer>
         <p>&copy; 2025 Prashant Subedi. All rights reserved.</p>
-        <p>Made by Prashant Subedi</p>
+        <p>Made with <span style="color: #ff0000;">❤</span> by Prashant Subedi</p>
     </footer>
 
     <!-- Social Media Links Fixed on Right Side -->
@@ -356,13 +362,41 @@
         window.onscroll = function() {
             if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
                 goToTopButton.style.display = 'block';
+                goToTopButton.classList.add('show');
             } else {
                 goToTopButton.style.display = 'none';
+                goToTopButton.classList.remove('show');
             }
         };
 
         function toggleMenu() {
             navLinks.classList.toggle('active');
+        }
+
+        function smoothScroll(event) {
+            event.preventDefault();
+            const targetId = event.currentTarget.getAttribute("href");
+            const targetPosition = document.querySelector(targetId).offsetTop;
+            const startPosition = window.pageYOffset;
+            const distance = targetPosition - startPosition;
+            const duration = 1000;
+            let start = null;
+
+            window.requestAnimationFrame(step);
+
+            function step(timestamp) {
+                if (!start) start = timestamp;
+                const progress = timestamp - start;
+                window.scrollTo(0, easeInOutCubic(progress, startPosition, distance, duration));
+                if (progress < duration) window.requestAnimationFrame(step);
+            }
+        }
+
+        function easeInOutCubic(t, b, c, d) {
+            t /= d / 2;
+            if (t < 1) return c / 2 * t * t * t + b;
+            t -= 2;
+            return c / 2 * (t * t * t + 2) + b;
         }
     </script>
 </body>
