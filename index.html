@@ -21,7 +21,29 @@
             color: #fff;
             line-height: 1.6;
             font-size: 1rem;
+            transition: background 0.3s ease, color 0.3s ease;
         }
+        body.dark-mode {
+            background: linear-gradient(135deg, #121212, #000000);
+            color: #f0f0f0;
+        }
+        body.dark-mode .section {
+            background-color: rgba(30, 30, 30, 0.8);
+        }
+        body.dark-mode nav {
+            background-color: rgba(20, 20, 20, 0.95);
+        }
+        body.dark-mode footer {
+            background-color: rgba(20, 20, 20, 0.95);
+        }
+        body.dark-mode .skills div,
+        body.dark-mode .portfolio div {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        body.dark-mode .social-icons a {
+            background-color: rgba(30, 30, 30, 0.9);
+        }
+        
         nav {
             background-color: rgba(0, 0, 0, 0.9);
             padding: 15px 20px;
@@ -33,6 +55,7 @@
             top: 0;
             left: 0;
             z-index: 1000;
+            transition: background-color 0.3s ease;
         }
         nav .logo {
             font-size: 1.5rem;
@@ -46,6 +69,7 @@
         }
         nav .nav-links {
             display: flex;
+            align-items: center;
         }
         nav .nav-links a {
             color: #fff;
@@ -56,6 +80,18 @@
         }
         nav .nav-links a:hover {
             color: #FFD700;
+        }
+        #darkModeToggle {
+            background: transparent;
+            border: none;
+            color: #FFD700;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-left: 15px;
+            transition: transform 0.3s ease;
+        }
+        #darkModeToggle:hover {
+            transform: scale(1.1);
         }
         @media (max-width: 768px) {
             nav .menu-icon {
@@ -73,6 +109,9 @@
             }
             nav .nav-links.active {
                 display: flex;
+            }
+            body.dark-mode .nav-links {
+                background-color: rgba(20, 20, 20, 0.95);
             }
         }
         
@@ -109,6 +148,7 @@
             margin: 20px 0;
             border-radius: 10px;
             background-color: rgba(0, 0, 0, 0.5);
+            transition: background-color 0.3s ease;
         }
         .section h2 {
             font-size: 2rem;
@@ -128,7 +168,7 @@
             border-radius: 8px;
             text-align: center;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, background-color 0.3s ease;
             width: 120px;
         }
         .skills div:hover {
@@ -149,7 +189,7 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, background-color 0.3s ease;
         }
         .portfolio div:hover {
             transform: translateY(-10px);
@@ -168,6 +208,7 @@
             text-align: center;
             padding: 20px;
             margin-top: 40px;
+            transition: background-color 0.3s ease;
         }
         footer p {
             color: #ccc;
@@ -231,7 +272,7 @@
             justify-content: center;
             gap: 15px;
             margin-top: 20px;
-            flex-wrap: wrap; /* Allow buttons to wrap to the next line */
+            flex-wrap: wrap;
         }
         .contact-buttons a {
             display: inline-block;
@@ -256,14 +297,17 @@
 
     <nav>
         <div class="logo">Prashant Subedi</div>
-        <div class="menu-icon" onclick="toggleMenu()">
-            <i class="fas fa-bars"></i>
-        </div>
         <div class="nav-links" id="navLinks">
             <a href="#home" onclick="smoothScroll(event)">Home</a>
             <a href="#skills" onclick="smoothScroll(event)">Skills</a>
             <a href="#portfolio" onclick="smoothScroll(event)">Portfolio</a>
             <a href="#contact" onclick="smoothScroll(event)">Contact</a>
+            <button id="darkModeToggle" aria-label="Toggle dark mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+        <div class="menu-icon" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
         </div>
     </nav>
 
@@ -359,6 +403,31 @@
     <script>
         const goToTopButton = document.getElementById('goToTop');
         const navLinks = document.getElementById('navLinks');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkModeIcon = darkModeToggle.querySelector('i');
+
+        // Check for saved user preference or use system preference
+        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+        const currentTheme = localStorage.getItem('theme');
+        
+        if (currentTheme === 'dark' || (!currentTheme && prefersDarkScheme.matches)) {
+            document.body.classList.add('dark-mode');
+            darkModeIcon.classList.replace('fa-moon', 'fa-sun');
+        }
+
+        // Dark mode toggle functionality
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            
+            if (isDarkMode) {
+                darkModeIcon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                darkModeIcon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        });
 
         window.onscroll = function() {
             if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
