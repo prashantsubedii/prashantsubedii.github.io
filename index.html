@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prashant Subedi | Software Engineer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Modern Minimalist Base Styles */
@@ -16,15 +16,15 @@
             --text-secondary: #b3bac7;
             --bg-color: transparent;
             --card-bg: #0f172a;
-            --card-bg-dark: #2f3b54; /* Grayish color for dark mode */
+            --card-bg-dark: #2f3b54;
             --light-gray: #1e293b;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             --border-radius: 8px;
             --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             --name-gradient: linear-gradient(135deg, #2b9da5 0%, #ff2d75 100%);
-            --secondary-gradient-dark: linear-gradient(135deg, #1e7a80, #3cc2cc); /* Dark mode gradient */
-            --header-bg-dark: rgba(15, 23, 42, 0.9); /* Semi-transparent navbar */
-            --secondary-gradient-light: linear-gradient(135deg, #60a5fa, #1e40af); /* Light mode gradient */
+            --secondary-gradient-dark: linear-gradient(135deg, #1e7a80, #3cc2cc);
+            --header-bg-dark: rgba(15, 23, 42, 0.9);
+            --secondary-gradient-light: linear-gradient(135deg, #60a5fa, #1e40af);
         }
 
         [data-theme="light"] {
@@ -164,7 +164,7 @@
             padding: 12px 24px;
             border-radius: var(--border-radius);
             font-weight: 500;
-            transition: var(--transition);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             font-size: 0.95rem;
             border: none;
             cursor: pointer;
@@ -206,6 +206,10 @@
             left: 100%;
         }
 
+        .btn.primary:active {
+            transform: scale(0.95);
+        }
+
         .btn.secondary {
             background-color: transparent;
             color: #2b9da5;
@@ -223,6 +227,10 @@
 
         [data-theme="light"] .btn.secondary:hover {
             background-color: rgba(96, 165, 250, 0.1);
+        }
+
+        .btn.secondary:active {
+            transform: scale(0.95);
         }
 
         /* Minimalist Header */
@@ -302,10 +310,10 @@
         }
 
         .burger div {
-            width: 25px;
-            height: 2px;
+            width: 1.5rem;
+            height: 0.15rem;
             background-color: var(--text-primary);
-            margin: 5px;
+            margin: 0.3rem;
             transition: all 0.3s ease;
         }
 
@@ -353,7 +361,7 @@
         }
 
         [data-theme="light"] .greeting {
-            color: var(--text-secondary); /* #64748b */
+            color: var(--text-secondary);
         }
 
         .name {
@@ -385,6 +393,98 @@
             margin-bottom: 30px;
             color: var(--text-secondary);
             font-size: 1.1rem;
+        }
+
+        /* Stats Section */
+        .stats-container {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+            position: relative;
+            align-items: center;
+        }
+
+        .stat-item {
+            text-align: center;
+            position: relative;
+            flex: 1;
+        }
+
+        .stat-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        [data-theme="light"] .stat-item:not(:last-child)::after {
+            background: rgba(96, 165, 250, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ffd700 0%, #ff2d75 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 5px;
+            line-height: 1;
+        }
+
+        [data-theme="light"] .stat-number {
+            background: linear-gradient(135deg, #facc15 0%, #ff2d75 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            font-weight: 400;
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-primary);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        [data-theme="light"] .stat-label {
+            color: var(--text-primary);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .stats-container {
+                justify-content: center;
+            }
+
+            .stat-item:not(:last-child)::after {
+                height: 40px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .stats-container {
+                gap: 20px;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            .stat-label {
+                font-size: 0.7rem;
+            }
+
+            .stat-item:not(:last-child)::after {
+                height: 30px;
+            }
         }
 
         .hero-image {
@@ -438,7 +538,7 @@
             transform: translateX(-50%);
             width: 400px;
             height: calc(100vh - 170px);
-            background-color: var(--card-bg-dark);
+            background-color: rgba(15, 23, 42, 0.7);
             border-radius: 16px;
             box-shadow: var(--box-shadow);
             z-index: 0;
@@ -446,7 +546,7 @@
         }
 
         [data-theme="light"] .hero-card {
-            background-color: var(--card-bg);
+            background-color: rgba(240, 247, 255, 0.7);
         }
 
         .hero-label {
@@ -525,11 +625,17 @@
 
         .hero-icons i:hover {
             transform: scale(1.2) translateY(-5px);
-            color: rgb(109, 209, 209);
         }
 
-        [data-theme="light"] .hero-icons i:hover {
-            color: transparent; /* Maintain gradient on hover */
+        .hero-icons .fab.fa-python:hover {
+            background: linear-gradient(90deg, #3776AB 0%, #FFD343 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero-icons .fab.fa-js:hover {
+            color: #F7DF1E;
         }
 
         @keyframes pop {
@@ -1063,7 +1169,7 @@
             right: 30px;
             width: 50px;
             height: 50px;
-            background: var(--secondary); /* #2b9da5 in dark mode */
+            background: var(--secondary);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -1349,7 +1455,21 @@
             <p class="description">
                 I'm a B.Sc. CSIT student passionate about software engineering and optimization. Currently focused on building responsive and performant web applications while expanding my knowledge in data structures and algorithms.
             </p>
-            <div class="cta-buttons">
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Learning Hours</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">5+</div>
+                    <div class="stat-label">Coding Skills</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Dedication</div>
+                </div>
+            </div>
+            <div class="cta-buttons" style="display: flex; justify-content: center; gap: 20px; margin-top: 10px;">
                 <a href="#contact" class="btn primary">Get In Touch</a>
                 <a href="#about" class="btn secondary">Learn More</a>
             </div>
@@ -1360,7 +1480,7 @@
                 <div class="hero-label">B.Sc. CSIT Student</div>
             </div>
             <div class="hero-image-container">
-                <img src="assets\images\Round.jpg" alt="Prashant Subedi">
+                <img src="assets/images/Round.jpg" alt="Prashant Subedi">
             </div>
             <div class="hero-icons">
                 <i class="fab fa-python" title="Python"></i>
@@ -1655,7 +1775,6 @@
                     icon.classList.add('fa-sun');
                 }
             }
-            
             
             // Form submission
             const contactForm = document.getElementById('contactForm');
