@@ -1,0 +1,87 @@
+[data-theme="light"] {
+    --primary: #4361ee;
+    --primary-dark: #3a56d4;
+    --secondary: #3f37c9;
+    --accent: #4895ef;
+    --text: #2b2d42;
+    --text-light: #5c677d;
+    --bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .btn-primary {
+    background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+    box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+}
+
+[data-theme="light"] .btn-primary:hover {
+    background: linear-gradient(135deg, #3a56d4 0%, #2e0a83 100%);
+}
+
+[data-theme="light"] .btn-secondary {
+    color: #4361ee;
+    border: 2px solid #4361ee;
+    background: transparent;
+}
+
+[data-theme="light"] .btn-secondary:hover {
+    background: rgba(67, 97, 238, 0.1);
+}
+
+[data-theme="light"] .toggle-btn {
+    color: #4361ee;
+    border: 2px solid #4361ee;
+}
+
+[data-theme="light"] .toggle-btn.active {
+    background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+    color: white;
+    border-color: transparent;
+}
+
+[data-theme="light"] .toggle-btn:hover {
+    color: #4361ee;
+    border-color: #4361ee;
+}
+
+[data-theme="light"] .project-links a:first-child {
+    background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+}
+
+[data-theme="light"] .project-links a:last-child {
+    color: #4361ee;
+    border: 2px solid #4361ee;
+}
+
+[data-theme="light"] .project-links a:last-child:hover {
+    background: rgba(67, 97, 238, 0.1);
+}
+
+[data-theme="light"] .view-all .btn-primary {
+    background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+}
+
+[data-theme="light"] .view-all .btn-primary:hover {
+    background: linear-gradient(135deg, #3a56d4 0%, #2e0a83 100%);
+}
+
+[data-theme="light"] .contact-form .btn-primary {
+    background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+}
+
+[data-theme="light"] .contact-form .btn-primary:hover {
+    background: linear-gradient(135deg, #3a56d4 0%, #2e0a83 100%);
+}
+
+[data-theme="light"] .image-wrapper {
+    border-color: #4361ee;
+}
+
+[data-theme="light"] .hero-image-card {
+    background: rgba(255, 255, 255, 0.7);
+}
+
+[data-theme="light"] .education-column {
+    background: rgba(255, 255, 255, 0.8);
+}
