@@ -20,15 +20,17 @@ document.addEventListener('DOMContentLoaded', function() {
             message: document.getElementById('message').value
         };
         
-        // Send the main email first
+        // Send email using EmailJS (main message)
         emailjs.send('service_w1cfsk9', 'template_dpzzvsq', formData)
             .then(function(response) {
-                // After main email is sent, send auto-reply email
-                return emailjs.send('service_w1cfsk9', 'template_4i43c0j', formData);
+                // If main message is sent successfully, send auto-reply
+                return emailjs.send('service_w1cfsk9', 'template_4i43c0j', {
+                    to_name: formData.name,
+                    to_email: formData.email
+                });
             })
             .then(function(response) {
-                // Both emails sent successfully
-                formMessage.textContent = 'Message sent successfully!';
+                formMessage.textContent = 'Message sent successfully! You will receive an auto-reply shortly.';
                 formMessage.classList.remove('error');
                 formMessage.classList.add('success');
                 formMessage.style.display = 'block';
@@ -43,9 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     formMessage.style.display = 'none';
                 }, 5000);
-            })
-            .catch(function(error) {
-                // Error sending either email
+            }, function(error) {
                 formMessage.textContent = 'Failed to send message. Please try again later.';
                 formMessage.classList.remove('success');
                 formMessage.classList.add('error');
