@@ -20,9 +20,14 @@ document.addEventListener('DOMContentLoaded', function() {
             message: document.getElementById('message').value
         };
         
-        // Send email using EmailJS
+        // Send the main email first
         emailjs.send('service_w1cfsk9', 'template_dpzzvsq', formData)
             .then(function(response) {
+                // After main email is sent, send auto-reply email
+                return emailjs.send('service_w1cfsk9', 'template_4i43c0j', formData);
+            })
+            .then(function(response) {
+                // Both emails sent successfully
                 formMessage.textContent = 'Message sent successfully!';
                 formMessage.classList.remove('error');
                 formMessage.classList.add('success');
@@ -38,7 +43,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     formMessage.style.display = 'none';
                 }, 5000);
-            }, function(error) {
+            })
+            .catch(function(error) {
+                // Error sending either email
                 formMessage.textContent = 'Failed to send message. Please try again later.';
                 formMessage.classList.remove('success');
                 formMessage.classList.add('error');
