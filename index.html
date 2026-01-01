@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prashant Subedi | Portfolio</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- EmailJS Library -->
+    <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#home" class="logo" id="logo">
+                <span class="logo-name">Prashant</span><span class="logo-dot">.</span>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#education" class="nav-link">Education</a></li>
+                <li><a href="#skills" class="nav-link">Skills</a></li>
+                <li><a href="#featured-projects" class="nav-link">Projects</a></li>
+                <li><a href="#blog" class="nav-link">Blog</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="theme-toggle-container">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-section" id="home">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <div class="hero-greeting">
+                            <span class="greeting-text">Hello, I'm</span>
+                        </div>
+                        <h1 class="hero-name">
+                            <span class="name-highlight">Prashant</span> Subedi
+                        </h1>
+                        <div class="hero-title">
+                            <span class="title-line">Aspiring Software Engineer</span>
+                            <span class="title-line">& A.I Research Aspirant</span>
+                        </div>
+                        <p class="hero-description">
+                            Currently pursuing <strong>B.Sc. CSIT</strong> with a passion for creating innovative solutions 
+                            through code. I'm fascinated by the intersection of software engineering and artificial 
+                            intelligence, exploring new technologies to push boundaries.
+                        </p>
+                        <p class="hero-description-secondary">
+                            With a foundation in computer science and curiosity for emerging tech, 
+                            I'm on a journey to become a skilled software engineer while contributing to AI research.
+                        </p>
+                        <div class="hero-buttons">
+                            <a href="assets/CV.pdf" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                                <i class="fas fa-download"></i>
+                                <span>Download My CV</span>
+                            </a>
+                            <a href="#contact" class="btn btn-secondary">
+                                <span>Let's Get Connected</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="hero-image-container">
+                        <div class="profile-frame">
+                            <div class="profile-image-wrapper">
+                                <img src="assets/images/profile.jpg" alt="Prashant Subedi" class="profile-image">
+                                <div class="profile-glow"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="scroll-indicator">
+                    <div class="mouse">
+                        <div class="wheel"></div>
+                    </div>
+                    <div class="arrow">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+        <!-- Featured Projects Section (static SkillBazar card) -->
+        <!-- About Section -->
+        <section class="about-section" id="about">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="title-text">About Me</span>
+                    </h2>
+                    <div class="title-line-decoration"></div>
+                </div>
+                <div class="about-content">
+                    <div class="about-image-container">
+                        <div class="about-image-frame">
+                            <img src="assets/images/about.jpg" alt="Prashant Subedi" class="about-image">
+                        </div>
+                    </div>
+                    <div class="about-text">
+                        <p class="about-paragraph">
+                            I'm a technology enthusiast currently pursuing my <strong>B.Sc. in Computer Science 
+                            and Information Technology</strong>, with a keen interest in software engineering and artificial 
+                            intelligence research. My journey in tech began with curiosity and has evolved into a commitment 
+                            to understanding how technology can solve real-world problems.
+                        </p>
+                        <p class="about-paragraph">
+                            My expertise lies in <strong>frontend development</strong>, where I enjoy crafting intuitive 
+                            and responsive user interfaces. I'm drawn to the creative process of turning 
+                            ideas into functional, beautiful web experiences. Beyond frontend development, I'm 
+                            fascinated by the potential of <strong>artificial intelligence</strong> and machine learning, 
+                            exploring how these technologies can revolutionize various industries.
+                        </p>
+                        <p class="about-paragraph">
+                            As a software enthusiast, I believe in writing clean, efficient code and staying updated 
+                            with industry trends. Whether it's building web applications or diving into AI 
+                            research, I approach every challenge with enthusiasm and a growth mindset.
+                        </p>
+                        <div class="about-highlights">
+                            <div class="highlight-item">
+                                <i class="fas fa-code"></i>
+                                <span>Frontend Development</span>
+                            </div>
+                            <div class="highlight-item">
+                                <i class="fas fa-brain"></i>
+                                <span>AI Research Enthusiast</span>
+                            </div>
+                            <div class="highlight-item">
+                                <i class="fas fa-laptop-code"></i>
+                                <span>Software Engineering</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Education Section -->
+        <section class="education-section" id="education">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="title-text">Education</span>
+                    </h2>
+                    <div class="title-line-decoration"></div>
+                </div>
+                <div class="education-cards">
+                    <div class="education-card">
+                        <div class="card-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-badge">Current</div>
+                            <h3 class="card-title">B.Sc. CSIT</h3>
+                            <p class="card-subtitle">Bachelor in Science - Computer Science and Information Technology</p>
+                            <p class="card-institution">
+                                <i class="fas fa-university"></i>
+                                Lumbini I.C.T Campus
+                            </p>
+                            <p class="card-affiliation">
+                                <i class="fas fa-link"></i>
+                                Affiliated to Tribhuvan University
+                            </p>
+                            <div class="card-timeline">
+                                <i class="fas fa-calendar"></i>
+                                <span>Ongoing</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="education-card">
+                        <div class="card-icon">
+                            <i class="fas fa-school"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-badge">Completed</div>
+                            <h3 class="card-title">+2 Computer Science</h3>
+                            <p class="card-subtitle">Higher Secondary Education</p>
+                            <p class="card-institution">
+                                <i class="fas fa-university"></i>
+                                Gaindakot Namuna Secondary School
+                            </p>
+                            <p class="card-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Gaindakot
+                            </p>
+                            <div class="card-timeline">
+                                <i class="fas fa-calendar"></i>
+                                <span>Completed</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="education-card">
+                        <div class="card-icon">
+                            <i class="fas fa-school"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-badge">Completed</div>
+                            <h3 class="card-title">S.E.E</h3>
+                            <p class="card-subtitle">Graduated with 4.0 GPA</p>
+                            <p class="card-institution">
+                                <i class="fas fa-university"></i>
+                                Gaindakot Namuna Secondary School
+                            </p>
+                            <p class="card-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Gaindakot
+                            </p>
+                            <div class="card-timeline">
+                                <i class="fas fa-calendar"></i>
+                                <span>Completed</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section class="skills-section" id="skills">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="title-text">Skills</span>
+                    </h2>
+                    <div class="title-line-decoration"></div>
+                </div>
+                <div class="skills-container">
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fab fa-html5"></i>
+                                HTML
+                            </span>
+                            <span class="skill-percentage" data-percent="85">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="html" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fab fa-css3-alt"></i>
+                                CSS
+                            </span>
+                            <span class="skill-percentage" data-percent="80">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="css" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fab fa-js"></i>
+                                JavaScript
+                            </span>
+                            <span class="skill-percentage" data-percent="75">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="js" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fab fa-python"></i>
+                                Python
+                            </span>
+                            <span class="skill-percentage" data-percent="70">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="python" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fas fa-code"></i>
+                                C/C++
+                            </span>
+                            <span class="skill-percentage" data-percent="65">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="cpp" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Projects Section -->
+        <section class="featured-projects-section" id="featured-projects">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="title-text">Featured Projects</span>
+                    </h2>
+                    <div class="title-line-decoration"></div>
+                </div>
+                <div class="featured-projects-container">
+                    <div class="education-card project-card-static">
+                        <div class="card-icon">
+                            <i class="fab fa-github"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">SkillBazar</h3>
+                            <p class="card-subtitle">A platform for skill sharing and discovery. SkillBazar enables users to showcase, discover, and connect over unique skills, fostering a collaborative learning environment. Built with modern web technologies and a focus on community-driven growth.</p>
+                            <div class="project-buttons" style="margin-top:1rem;display:flex;gap:1rem;">
+                                <a href="https://github.com/prashantsubedii/SkillBazar" target="_blank" rel="noopener noreferrer" class="btn btn-primary project-btn">
+                                    <i class="fas fa-code"></i>
+                                    <span>View Source Code</span>
+                                </a>
+                                <button class="btn btn-secondary project-btn" id="viewSkillBazarReadme">
+                                    <i class="fas fa-book"></i>
+                                    <span>View Article</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Empty slots for future cards -->
+                    <div class="education-card project-card-static empty-card" style="visibility:hidden;"></div>
+                    <div class="education-card project-card-static empty-card" style="visibility:hidden;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Blog Section -->
+        <section class="blog-section" id="blog">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="title-text">Recent Blogs</span>
+                    </h2>
+                    <div class="title-line-decoration"></div>
+                </div>
+                <div class="blog-container" id="blogContainer">
+                    <div class="blogs-loading">
+                        <div class="loading-spinner"></div>
+                        <p>Loading blogs...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Blog Content Modal -->
+        <div id="blogModal" class="blog-modal">
+            <div class="blog-modal-content">
+                <div class="blog-modal-header">
+                    <button class="blog-modal-back" id="blogModalBack">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Back</span>
+                    </button>
+                    <h2 id="blogModalTitle">Blog Post</h2>
+                    <button class="blog-modal-close" id="blogModalClose">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="blog-modal-body" id="blogModalBody">
+                    <div class="blog-loading">
+                        <div class="loading-spinner"></div>
+                        <p>Loading blog...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Section -->
+        <section class="contact-section" id="contact" style="margin-top: -10rem;">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="title-text">Get In Touch</span>
+                    </h2>
+                    <div class="title-line-decoration"></div>
+                </div>
+                <div class="contact-content">
+                    <div class="contact-info">
+                        <p class="contact-description">
+                            I'm always open to discussing new projects, creative ideas, or opportunities to be part of 
+                            your visions. Feel free to reach out if you'd like to connect!
+                        </p>
+                        <div class="contact-details">
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="contact-text">
+                                    <h4>Address</h4>
+                                    <p>Gaindakot, Nawalparasi (East)</p>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="contact-text">
+                                    <h4>Email</h4>
+                                    <a href="mailto:contactprashantsubedi@gmail.com">contactprashantsubedi@gmail.com</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="contact-social">
+                            <h4>Connect With Me</h4>
+                            <div class="social-links">
+                                <a href="https://github.com/prashantsubedii" target="_blank" rel="noopener noreferrer" class="social-btn">
+                                    <i class="fab fa-github"></i>
+                                </a>
+                                <a href="https://linkedin.com/in/prashantsubedii" target="_blank" rel="noopener noreferrer" class="social-btn">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                <a href="https://instagram.com/prashanttsubedi" target="_blank" rel="noopener noreferrer" class="social-btn">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <a href="https://twitter.com/prashantsubedii" target="_blank" rel="noopener noreferrer" class="social-btn">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a href="https://codepen.io/prashantsubedii" target="_blank" rel="noopener noreferrer" class="social-btn">
+                                    <i class="fab fa-codepen"></i>
+                                </a>
+                                <a href="https://scholar.google.com/citations?user=4yStW54AAAAJ&hl=en" target="_blank" rel="noopener noreferrer" class="social-btn">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </a>
+                                <a href="https://medium.com/@prashantsubedii" target="_blank" rel="noopener noreferrer" class="social-btn">
+                                    <i class="fab fa-medium"></i>
+                                </a>
+                                <a href="https://dev.to/prashantsubedii" target="_blank" rel="noopener noreferrer" class="social-btn">
+                                    <i class="fab fa-dev"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="contact-form-container">
+                        <form class="contact-form" id="contactForm" action="https://formspree.io/f/mregongl" method="POST">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Message</label>
+                                <textarea id="message" name="message" rows="5" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <span>Send Message</span>
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <span class="logo-name">Prashant</span><span class="logo-dot">.</span>
+                    </div>
+                    <p class="footer-tagline">Building Intelligent Solutions</p>
+                </div>
+                <div class="footer-text">
+                    <p>&copy; <span id="currentYear">2025</span> Prashant Subedi. All rights reserved.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#home">Home</a>
+                    <a href="#about">About</a>
+                    <a href="#education">Education</a>
+                    <a href="#skills">Skills</a>
+                    <a href="#featured-projects">Projects</a>
+                    <a href="#blog">Blog</a>
+                    <a href="#contact">Contact</a>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- README Modal -->
+    <div id="readmeModal" class="readme-modal">
+        <div class="readme-modal-content">
+            <div class="readme-modal-header">
+                <button class="readme-modal-back" id="readmeModalBack">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back</span>
+                </button>
+                <h2 id="readmeModalTitle">Project README</h2>
+                <button class="readme-modal-close" id="readmeModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="readme-modal-body" id="readmeModalBody">
+                <div class="readme-loading">
+                    <div class="loading-spinner"></div>
+                    <p>Loading README...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Form Popup -->
+    <div id="contactPopup" class="contact-popup">
+        <div class="contact-popup-content">
+            <div class="contact-popup-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 class="contact-popup-title">Message Sent!</h3>
+            <p class="contact-popup-message">Thank you for your message! I'll get back to you soon.</p>
+            <button class="contact-popup-close btn btn-primary">Close</button>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

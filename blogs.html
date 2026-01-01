@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prashant Subedi | Blog</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-name">Prashant</span><span class="logo-dot">.</span>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="index.html#about" class="nav-link">About</a></li>
+                <li><a href="index.html#education" class="nav-link">Education</a></li>
+                <li><a href="index.html#skills" class="nav-link">Skills</a></li>
+                <li><a href="index.html#projects" class="nav-link">Projects</a></li>
+                <li><a href="index.html#blog" class="nav-link">Blog</a></li>
+                <li><a href="index.html#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="theme-toggle-container">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Page Hero Section -->
+        <section class="page-hero">
+            <div class="page-hero-content">
+                <h1 class="page-hero-title">Explore My Thoughts</h1>
+                <p class="page-hero-subtitle">A collection of insights on software development, AI, and technology</p>
+            </div>
+        </section>
+
+        <!-- Blog Section -->
+        <section class="blog-section" id="blog">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="title-text">All Blogs</span>
+                    </h2>
+                    <div class="title-line-decoration"></div>
+                    <div class="blog-back-button">
+                        <a href="index.html#blog" class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.4rem 0.8rem; display: inline-flex; align-items: center; gap: 0.3rem;">
+                            <i class="fas fa-arrow-left" style="font-size: 0.8rem;"></i>
+                            <span>Back</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="blog-container blog-container-all" id="blogContainer">
+                    <div class="blogs-loading">
+                        <div class="loading-spinner"></div>
+                        <p>Loading blogs...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content" style="justify-content: center; text-align: center;">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <div class="footer-logo" style="text-align: center;">
+                        <span class="logo-name">Prashant</span><span class="logo-dot">.</span>
+                    </div>
+                    <div class="footer-tagline" style="margin-top: 0.18rem; font-size: 1rem; color: var(--text-secondary); font-weight: 400; letter-spacing: 0.01em; text-align: center;">Building Intelligent Solutions</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Blog Content Modal -->
+    <div id="blogModal" class="blog-modal">
+        <div class="blog-modal-content">
+            <div class="blog-modal-header">
+                <button class="blog-modal-back" id="blogModalBack">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back</span>
+                </button>
+                <h2 id="blogModalTitle">Blog Post</h2>
+                <button class="blog-modal-close" id="blogModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="blog-modal-body" id="blogModalBody">
+                <div class="blog-loading">
+                    <div class="loading-spinner"></div>
+                    <p>Loading blog...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
