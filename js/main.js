@@ -1,40 +1,3 @@
-// Handle SkillBazar README modal for static card
-document.addEventListener('DOMContentLoaded', () => {
-    const readmeBtn = document.getElementById('viewSkillBazarReadme');
-    const modal = document.getElementById('readmeModal');
-    const modalTitle = document.getElementById('readmeModalTitle');
-    const modalBody = document.getElementById('readmeModalBody');
-    const modalBack = document.getElementById('readmeModalBack');
-    const modalClose = document.getElementById('readmeModalClose');
-    if (readmeBtn) {
-        readmeBtn.addEventListener('click', async () => {
-            if (modal && modalTitle && modalBody) {
-                modalTitle.textContent = 'SkillBazar README';
-                modalBody.innerHTML = '<div class="readme-loading"><div class="loading-spinner"></div><p>Loading README...</p></div>';
-                modal.classList.add('active');
-                try {
-                    const resp = await fetch('https://raw.githubusercontent.com/prashantsubedii/SkillBazar/main/README.md');
-                    if (!resp.ok) throw new Error('Failed to fetch README');
-                    const md = await resp.text();
-                    modalBody.innerHTML = `<div style="background:var(--bg-secondary);padding:1.5rem;border-radius:10px;max-height:60vh;overflow:auto;"><pre style="white-space:pre-wrap;word-break:break-word;">${md.replace(/</g,'&lt;')}</pre></div>`;
-                } catch (err) {
-                    modalBody.innerHTML = '<p style="color:red;">Unable to load README.</p>';
-                }
-            }
-        });
-    }
-    // Back and close button functionality
-    if (modalBack) {
-        modalBack.addEventListener('click', () => {
-            if (modal) modal.classList.remove('active');
-        });
-    }
-    if (modalClose) {
-        modalClose.addEventListener('click', () => {
-            if (modal) modal.classList.remove('active');
-        });
-    }
-});
 // ===== Theme Toggle =====
 const themeToggle = document.getElementById('themeToggle');
 const body = document.body;
@@ -80,14 +43,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize skills animation
     initSkillsAnimation();
     
-    // Load GitHub projects
-    loadGitHubProjects();
+    // Load GitHub pinned projects
+    loadPinnedProjects();
     
     // Load Medium blogs
     loadMediumBlogs();
-    
-    // Initialize SkillBazar project button
-    initSkillBazarButton();
     
     // Initialize smooth scrolling
     initSmoothScrolling();
@@ -140,7 +100,7 @@ function viewAllArticles() {
 async function loadMediumBlogsForProjects() {
     try {
         // Use RSS to JSON proxy
-        const proxyUrl = 'https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@prashantsubedii';
+        const proxyUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent('https://medium.com/feed/@prashantsubedii');
         
         // Fetch with timeout
         const controller = new AbortController();
@@ -389,6 +349,264 @@ function animateSkillBar(progressBar, percentageElement, targetPercent) {
     }, 16);
 }
 
+// ===== GitHub Pinned Projects (via GraphQL API) =====
+// Helper function for fetch with timeout
+const fetchWithTimeout = (url, options = {}, timeout = 5000) => {
+    return Promise.race([
+        fetch(url, options),
+        new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Fetch timeout')), timeout)
+        )
+    ]);
+};
+
+async function loadPinnedProjects() {
+    const container = document.getElementById('pinnedProjectsContainer');
+    if (!container) return;
+    
+    // Show loading
+    container.innerHTML = `
+        <div class="projects-loading">
+            <div class="loading-spinner"></div>
+            <p>Loading pinned projects...</p>
+        </div>
+    `;
+    
+    const username = 'prashantsubedii';
+    
+    try {
+        let pinnedRepos = null;
+        
+        // Try Netlify function first (uses GitHub GraphQL API with PAT) - with timeout
+        // Only try if NOT on GitHub Pages (check if .netlify exists)
+        const isGitHubPages = !window.location.hostname.includes('netlify');
+        if (!isGitHubPages) {
+            try {
+                const response = await fetchWithTimeout('/.netlify/functions/github-pinned', {}, 3000);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('GitHub Response:', data);
+                    if (data.success && data.pinnedRepos && data.pinnedRepos.length > 0) {
+                        pinnedRepos = data.pinnedRepos;
+                        console.log('Pinned Repos with Images:', pinnedRepos.map(r => ({ name: r.name, image: r.image })));
+                    }
+                }
+            } catch (e) {
+                console.log('Netlify function not available, trying fallback...', e.message);
+            }
+        } else {
+            console.log('Detected GitHub Pages deployment, skipping Netlify function');
+        }
+        
+        // Fallback 1: Try egoist API - with timeout
+        if (!pinnedRepos) {
+            try {
+                const fallbackResponse = await fetchWithTimeout(`https://gh-pinned-repos.egoist.dev/?username=${username}`, {}, 5000);
+                if (fallbackResponse.ok) {
+                    const fallbackData = await fallbackResponse.json();
+                    if (fallbackData && fallbackData.length > 0) {
+                        pinnedRepos = fallbackData.map(repo => ({
+                            name: repo.repo,
+                            description: repo.description || 'No description available.',
+                            url: repo.link,
+                            defaultBranch: 'main',
+                            openGraphImage: `https://opengraph.githubassets.com/1/${username}/${repo.repo}`,
+                            stars: repo.stars || 0,
+                            forks: repo.forks || 0,
+                            language: repo.language || null,
+                            languageColor: null,
+                            topics: []
+                        }));
+                        console.log('Successfully loaded pinned repos from egoist API');
+                    }
+                }
+            } catch (e) {
+                console.log('Egoist API failed, trying next fallback...', e.message);
+            }
+        }
+        
+        // Fallback 2: Try Deno API - with timeout
+        if (!pinnedRepos) {
+            try {
+                const denoResponse = await fetchWithTimeout(`https://gh-pinned-repos-tsj7ta5xfhep.deno.dev/?username=${username}`, {}, 5000);
+                if (denoResponse.ok) {
+                    const denoData = await denoResponse.json();
+                    if (denoData && denoData.length > 0) {
+                        pinnedRepos = denoData.map(repo => ({
+                            name: repo.repo,
+                            description: repo.description || 'No description available.',
+                            url: repo.link,
+                            defaultBranch: 'main',
+                            openGraphImage: `https://opengraph.githubassets.com/1/${username}/${repo.repo}`,
+                            stars: repo.stars || 0,
+                            forks: repo.forks || 0,
+                            language: repo.language || null,
+                            languageColor: null,
+                            topics: []
+                        }));
+                        console.log('Successfully loaded pinned repos from Deno API');
+                    }
+                }
+            } catch (e) {
+                console.log('Deno API failed, using hardcoded fallback...', e.message);
+            }
+        }
+        
+        // Fallback 3: Hardcoded pinned repos (your current 2 pinned repos)
+        if (!pinnedRepos) {
+            pinnedRepos = [
+                {
+                    name: 'SkillBazar',
+                    description: 'SkillBazar is a fiverr like freelancing platform based in Nepal',
+                    url: 'https://github.com/prashantsubedii/SkillBazar',
+                    defaultBranch: 'main',
+                    openGraphImage: 'https://opengraph.githubassets.com/1/prashantsubedii/SkillBazar',
+                    stars: 1,
+                    forks: 0,
+                    language: 'Python',
+                    languageColor: '#3572A5',
+                    topics: []
+                },
+                {
+                    name: 'Basic-Python',
+                    description: 'This repository contains basic Python programs written during my Python learning journey. It includes simple practice codes created in VS Code, starting from zero level concepts such as variables, data types, conditions, loops, and basic functions.',
+                    url: 'https://github.com/prashantsubedii/Basic-Python',
+                    defaultBranch: 'main',
+                    openGraphImage: 'https://opengraph.githubassets.com/1/prashantsubedii/Basic-Python',
+                    stars: 0,
+                    forks: 0,
+                    language: 'Python',
+                    languageColor: '#3572A5',
+                    topics: []
+                }
+            ];
+        }
+        
+        // Clear loading
+        container.innerHTML = '';
+        
+        if (pinnedRepos && pinnedRepos.length > 0) {
+            pinnedRepos.forEach(repo => {
+                const card = createPinnedProjectCard(repo);
+                container.appendChild(card);
+            });
+        } else {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 2rem; grid-column: 1 / -1;">
+                    <p style="color: var(--text-secondary);">No pinned projects yet.</p>
+                    <a href="https://github.com/${username}" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="margin-top: 1rem;">
+                        <i class="fab fa-github"></i>
+                        <span>Visit GitHub Profile</span>
+                    </a>
+                </div>
+            `;
+        }
+        
+    } catch (error) {
+        console.error('Error loading pinned projects:', error);
+        container.innerHTML = `
+            <div style="text-align: center; padding: 2rem; grid-column: 1 / -1;">
+                <p style="color: var(--text-secondary);">Unable to load pinned projects.</p>
+                <button onclick="loadPinnedProjects()" class="btn btn-primary" style="margin-top: 1rem;">
+                    <i class="fas fa-redo"></i>
+                    <span>Retry</span>
+                </button>
+            </div>
+        `;
+    }
+}
+
+function createPinnedProjectCard(repo) {
+    const card = document.createElement('div');
+    card.className = 'project-card-new';
+    
+    const repoName = repo.name;
+    const repoUrl = repo.url;
+    
+    // Language colors mapping for fallback
+    const languageColors = {
+        'JavaScript': '#f1e05a',
+        'TypeScript': '#3178c6',
+        'Python': '#3572A5',
+        'Java': '#b07219',
+        'HTML': '#e34c26',
+        'CSS': '#563d7c',
+        'C++': '#f34b7d',
+        'C': '#555555',
+        'C#': '#178600',
+        'PHP': '#4F5D95',
+        'Ruby': '#701516',
+        'Go': '#00ADD8',
+        'Rust': '#dea584',
+        'Swift': '#ffac45',
+        'Kotlin': '#A97BFF',
+        'Dart': '#00B4AB'
+    };
+    
+    const langColor = repo.languageColor || languageColors[repo.language] || '#6e7681';
+    
+    // Build tags HTML - show language and topics
+    let tagsHTML = '';
+    const allTags = [];
+    if (repo.language) allTags.push(repo.language);
+    if (repo.topics && repo.topics.length > 0) {
+        allTags.push(...repo.topics.slice(0, 5));
+    }
+    if (allTags.length > 0) {
+        tagsHTML = `
+            <div class="project-tags">
+                ${allTags.map(tag => `<span class="project-tag">${tag}</span>`).join('')}
+            </div>
+        `;
+    }
+    
+    // Build thumbnail URL from repo's thumbnail.png file
+    const defaultBranch = repo.defaultBranch || 'main';
+    const thumbnailUrl = `https://raw.githubusercontent.com/prashantsubedii/${repoName}/${defaultBranch}/thumbnail.png`;
+    const fallbackUrl = repo.openGraphImage || `https://opengraph.githubassets.com/1/prashantsubedii/${repoName}`;
+    
+    console.log(`Project ${repoName} thumbnail URL:`, thumbnailUrl);
+    console.log(`Project ${repoName} fallback URL:`, fallbackUrl);
+    
+    const imageHTML = `
+        <img src="${thumbnailUrl}" alt="${repoName}" class="project-card-image" 
+             onload="console.log('Thumbnail loaded for ${repoName}')" 
+             onerror="console.log('Thumbnail failed for ${repoName}, using fallback'); this.onerror=null; this.src='${fallbackUrl}';">
+        <div class="project-card-image-fallback" style="display: none;"><i class="fab fa-github"></i></div>
+    `;
+    
+    card.innerHTML = `
+        <div class="project-card-thumbnail">
+            ${imageHTML}
+        </div>
+        <div class="project-card-body">
+            <h3 class="project-card-title">${repoName}</h3>
+            <p class="project-card-desc">${repo.description || 'No description available.'}</p>
+            ${tagsHTML}
+            <div class="project-card-actions">
+                <a href="${repoUrl}" target="_blank" rel="noopener noreferrer" class="project-action-btn primary">
+                    <span>View Source Code</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+                <button class="project-action-btn secondary view-readme-btn" data-owner="prashantsubedii" data-repo="${repoName}" data-url="${repoUrl}">
+                    <span>Read Article</span>
+                    <i class="fas fa-book-open"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Add event listener for README button
+    const readmeBtn = card.querySelector('.view-readme-btn');
+    if (readmeBtn) {
+        readmeBtn.addEventListener('click', () => {
+            showReadme(repoName, repoUrl);
+        });
+    }
+    
+    return card;
+}
+
 // ===== GitHub Projects =====
 async function loadGitHubProjects() {
     const projectsContainer = document.getElementById('projectsContainer');
@@ -415,92 +633,45 @@ async function loadGitHubProjects() {
     }
     
     try {
-        // Try Netlify endpoint first, fallback to Vercel
-        let apiEndpoint = '/.netlify/functions/github-projects';
-        let response;
-        let result;
+        // Detect if running on GitHub Pages
+        const isGitHubPages = !window.location.hostname.includes('netlify');
         
-        // Helper function for fetch with timeout
-        const fetchWithTimeout = async (url, options = {}, timeout = 10000) => {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), timeout);
-            
+        // Try Netlify endpoint first (only on Netlify), then fallback
+        let result = null;
+        
+        if (!isGitHubPages) {
             try {
-                const response = await fetch(url, {
-                    ...options,
-                    signal: controller.signal
-                });
-                clearTimeout(timeoutId);
-                // Manually display SkillBazar project card
-                if (loadingIndicator) loadingIndicator.remove();
-                projectsContainer.innerHTML = '';
-                const card = document.createElement('div');
-                card.className = 'project-card';
-                card.innerHTML = `
-                    <div class="project-header">
-                        <div class="project-icon">
-                            <i class="fab fa-github"></i>
-                        </div>
-                    </div>
-                    <h3 class="project-title">SkillBazar</h3>
-                    <p class="project-description">A platform for skill sharing and discovery. (Demo project)</p>
-                    <div class="project-buttons">
-                        <a href="https://github.com/prashantsubedii/SkillBazar" target="_blank" rel="noopener noreferrer" class="btn btn-primary project-btn">
-                            <i class="fas fa-code"></i>
-                            <span>View Source Code</span>
-                        </a>
-                        <button class="btn btn-secondary project-btn view-readme-btn" id="skillbazar-readme-btn">
-                            <i class="fas fa-book"></i>
-                            <span>View Article</span>
-                        </button>
-                    </div>
-                    <div class="project-readme-container" id="skillbazar-readme-container" style="display:none;"></div>
-                `;
-                projectsContainer.appendChild(card);
-                // Add event for View Article
-                const readmeBtn = document.getElementById('skillbazar-readme-btn');
-                const readmeContainer = document.getElementById('skillbazar-readme-container');
-                if (readmeBtn && readmeContainer) {
-                    readmeBtn.addEventListener('click', async () => {
-                        if (readmeContainer.style.display === 'block') {
-                            readmeContainer.style.display = 'none';
-                            readmeBtn.querySelector('span').textContent = 'View Article';
-                            return;
-                        }
-                        readmeBtn.querySelector('span').textContent = 'Loading...';
-                        // Fetch README from GitHub
-                        try {
-                            const resp = await fetch('https://raw.githubusercontent.com/prashantsubedii/SkillBazar/main/README.md');
-                            if (!resp.ok) throw new Error('Failed to fetch README');
-                            const md = await resp.text();
-                            // Convert markdown to HTML (basic)
-                            readmeContainer.innerHTML = `<div style="background:var(--bg-secondary);padding:1.5rem;border-radius:10px;"><pre style="white-space:pre-wrap;word-break:break-word;">${md.replace(/</g,'&lt;')}</pre></div>`;
-                            readmeContainer.style.display = 'block';
-                            readmeBtn.querySelector('span').textContent = 'Hide Article';
-                        } catch (err) {
-                            readmeContainer.innerHTML = '<p style="color:red;">Unable to load README.</p>';
-                            readmeContainer.style.display = 'block';
-                            readmeBtn.querySelector('span').textContent = 'Hide Article';
-                        }
-                    });
-                }
-                apiEndpoint = '/api/github-projects';
-                response = await fetchWithTimeout(apiEndpoint, {
+                const response = await fetchWithTimeout('/.netlify/functions/github-projects', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                     }
-                }, 10000);
+                }, 5000);
                 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                if (response.ok) {
+                    result = await response.json();
                 }
-                
-                result = await response.json();
-            } catch (secondError) {
-                // Both endpoints failed
-                throw new Error('Unable to connect to server. Please check your deployment or try again later.');
+            } catch (e) {
+                console.log('Netlify function not available, trying fallback...', e.message);
             }
+        } else {
+            console.log('Detected GitHub Pages deployment, skipping Netlify function');
+        }
+        
+        // If still no result, show static fallback projects
+        if (!result || !result.success) {
+            result = {
+                success: true,
+                projects: [
+                    {
+                        name: 'SkillBazar',
+                        body: 'SkillBazar is a Fiverr-like freelancing platform based in Nepal',
+                        url: 'https://github.com/prashantsubedii/SkillBazar',
+                        updatedAt: new Date().toISOString()
+                    }
+                ]
+            };
+            console.log('Using static fallback projects');
         }
         
         // Remove loading indicator
@@ -518,7 +689,7 @@ async function loadGitHubProjects() {
                     projectsContainer.appendChild(projectCard);
                 });
             } else {
-                projectsContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">No public GitHub Projects (boards) found. Create some at github.com to see them here.</p>';
+                projectsContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">No public GitHub Projects found. Visit <a href="https://github.com/prashantsubedii" target="_blank">GitHub</a> to see my repositories.</p>';
             }
         } else {
             throw new Error(result.error || 'Invalid response from server');
@@ -1016,50 +1187,24 @@ async function showReadme(repoName, repoUrl) {
     modal.classList.add('active');
     
     try {
-        // Try Netlify endpoint first, fallback to Vercel
-        let apiEndpoint = `/.netlify/functions/github-readme?owner=${owner}&repo=${repo}`;
-        let response;
-        let result;
+        // Fetch README directly from GitHub raw content
+        const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main/README.md`;
+        const response = await fetch(rawUrl);
         
-        try {
-            response = await fetch(apiEndpoint);
+        if (!response.ok) {
+            // Try master branch if main doesn't exist
+            const masterUrl = `https://raw.githubusercontent.com/${owner}/${repo}/master/README.md`;
+            const masterResponse = await fetch(masterUrl);
             
-            // If Netlify endpoint returns 404, try Vercel
-            if (response.status === 404) {
-                apiEndpoint = `/api/github-readme?owner=${owner}&repo=${repo}`;
-                response = await fetch(apiEndpoint);
+            if (!masterResponse.ok) {
+                throw new Error('README not found');
             }
             
-            result = await response.json();
-        } catch (fetchError) {
-            // If Netlify fails, try Vercel
-            apiEndpoint = `/api/github-readme?owner=${owner}&repo=${repo}`;
-            response = await fetch(apiEndpoint);
-            result = await response.json();
-        }
-        
-        if (response.ok && result.success) {
-            let readmeContent = result.content;
-            
-            // Remove emojis
-            readmeContent = removeEmojis(readmeContent);
-            
-            // Remove project structure section
-            readmeContent = removeProjectStructure(readmeContent);
-            
-            // Clean up extra whitespace
-            readmeContent = readmeContent.replace(/\n{3,}/g, '\n\n');
-            
-            // Convert Markdown to HTML
-            let htmlContent = convertMarkdownToHTML(readmeContent);
-            
-            modalBody.innerHTML = `
-                <div class="readme-content">
-                    ${htmlContent}
-                </div>
-            `;
+            const readmeContent = await masterResponse.text();
+            displayReadmeContent(readmeContent, modalBody, repoUrl);
         } else {
-            throw new Error(result.error || 'Failed to fetch README');
+            const readmeContent = await response.text();
+            displayReadmeContent(readmeContent, modalBody, repoUrl);
         }
     } catch (error) {
         console.error('Error loading README:', error);
@@ -1070,6 +1215,26 @@ async function showReadme(repoName, repoUrl) {
             </div>
         `;
     }
+}
+
+function displayReadmeContent(readmeContent, modalBody, repoUrl) {
+    // Remove emojis
+    readmeContent = removeEmojis(readmeContent);
+    
+    // Remove project structure section
+    readmeContent = removeProjectStructure(readmeContent);
+    
+    // Clean up extra whitespace
+    readmeContent = readmeContent.replace(/\n{3,}/g, '\n\n');
+    
+    // Convert Markdown to HTML
+    let htmlContent = convertMarkdownToHTML(readmeContent);
+    
+    modalBody.innerHTML = `
+        <div class="readme-content">
+            ${htmlContent}
+        </div>
+    `;
 }
 
 function removeEmojis(text) {
@@ -1190,24 +1355,7 @@ function convertMarkdownToHTML(markdown) {
     return html;
 }
 
-// ===== Initialize SkillBazar Button =====
-function initSkillBazarButton() {
-    // Initialize all view-readme-btn buttons including SkillBazar
-    const readmeButtons = document.querySelectorAll('.view-readme-btn');
-    readmeButtons.forEach(btn => {
-        // Remove any existing listeners to avoid duplicates
-        const newBtn = btn.cloneNode(true);
-        btn.parentNode.replaceChild(newBtn, btn);
-        
-        newBtn.addEventListener('click', () => {
-            const repoName = newBtn.getAttribute('data-repo');
-            const repoUrl = newBtn.getAttribute('data-url');
-            if (repoName && repoUrl) {
-                showReadme(repoName, repoUrl);
-            }
-        });
-    });
-}
+// ===== Initialize README buttons dynamically =====
 
 // ===== Medium Blog Functions =====
 let allBlogs = [];
@@ -1234,10 +1382,11 @@ async function loadMediumBlogs() {
             if (age < cacheAge) {
                 const blogs = JSON.parse(cachedData);
                 allBlogs = blogs;
+                window.allBlogs = blogs; // Make accessible globally
                 if (isBlogsPage) {
                     displayBlogs(blogs); // Show all blogs on blogs page
                 } else {
-                    displayBlogs(blogs.slice(0, 2)); // Show first 2 on home page
+                    displayBlogs(blogs.slice(0, 3)); // Show first 3 on home page
                 }
                 return;
             }
@@ -1262,7 +1411,7 @@ async function loadMediumBlogs() {
     
     try {
         // Use RSS to JSON proxy
-        const proxyUrl = 'https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@prashantsubedii';
+        const proxyUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent('https://medium.com/feed/@prashantsubedii');
         
         // Fetch with timeout
         const controller = new AbortController();
@@ -1284,6 +1433,10 @@ async function loadMediumBlogs() {
         
         const result = await response.json();
         
+        // Debug: Log what we received
+        console.log('Medium RSS Response:', result);
+        console.log('Total articles fetched:', result.items?.length || 0);
+        
         // Remove loading indicator
         if (loadingIndicator) {
             loadingIndicator.remove();
@@ -1294,14 +1447,18 @@ async function loadMediumBlogs() {
             const blogs = result.items.map(item => ({
                 title: item.title || 'Untitled',
                 description: cleanHTML(item.description || item.content || ''),
-                excerpt: cleanHTML(item.description || item.content || '').substring(0, 150) + '...',
+                excerpt: cleanHTML(item.description || item.content || '').substring(0, 120) + '...',
                 thumbnail: item.thumbnail || extractImageFromContent(item.content) || 'https://via.placeholder.com/600x400?text=Blog+Post',
                 link: item.link || '',
                 pubDate: item.pubDate || '',
-                content: item.content || item.description || ''
+                content: item.content || item.description || '',
+                categories: item.categories || []
             }));
             
+            console.log('Parsed blogs:', blogs.map(b => b.title));
+            
             allBlogs = blogs;
+            window.allBlogs = blogs; // Make accessible globally for filtering
             
             // Cache the blogs
             try {
@@ -1315,7 +1472,7 @@ async function loadMediumBlogs() {
             if (isBlogsPage) {
                 displayBlogs(blogs); // Show all blogs on blogs page
             } else {
-                displayBlogs(blogs.slice(0, 2)); // Show first 2 on home page
+                displayBlogs(blogs.slice(0, 3)); // Show first 3 on home page
             }
             
         } else {
@@ -1372,22 +1529,19 @@ function displayBlogs(blogs) {
     blogs.forEach((blog, index) => {
         const blogCard = createBlogCard(blog);
         blogContainer.appendChild(blogCard);
-        
-        // Add "View All Blogs" button after the 2nd card on home page only
-        if (index === 1 && !isBlogsPage && !showingAllBlogs) {
-            const viewAllBtn = document.createElement('div');
-            viewAllBtn.className = 'blog-view-all';
-            viewAllBtn.style.textAlign = 'right';
-            viewAllBtn.style.marginTop = '0.5rem';
-            viewAllBtn.innerHTML = `
-                <a href="blogs.html" class="btn btn-primary" style="font-size: 0.75rem; padding: 0.3rem 0.8rem; display: inline-flex; align-items: center; gap: 0.4rem;">
-                    <span>View All Blogs</span>
-                    <i class="fas fa-arrow-right" style="font-size: 0.7rem;"></i>
-                </a>
-            `;
-            blogContainer.appendChild(viewAllBtn);
-        }
     });
+    
+    // Add View All link after cards on home page only
+    if (!isBlogsPage && !showingAllBlogs) {
+        const viewAllDiv = document.createElement('div');
+        viewAllDiv.className = 'blog-view-all';
+        viewAllDiv.innerHTML = `
+            <a href="blogs.html" class="view-all-link">
+                View All Blogs <i class="fas fa-arrow-right"></i>
+            </a>
+        `;
+        blogContainer.appendChild(viewAllDiv);
+    }
 }
 
 function viewAllBlogs() {
@@ -1407,36 +1561,48 @@ function viewAllBlogs() {
 
 function createBlogCard(blog) {
     const card = document.createElement('div');
-    card.className = 'blog-card';
+    card.className = 'blog-card-new';
     
-    // Pick a random tag if available
-    let tagHTML = '';
+    // Get categories from article (these are the actual Medium tags)
+    let categoryTags = [];
     if (blog.categories && blog.categories.length > 0) {
-        const randomTag = blog.categories[Math.floor(Math.random() * blog.categories.length)];
-        tagHTML = `<span class="blog-tag">${randomTag}</span>`;
+        // Take up to 2 categories from the article
+        categoryTags = blog.categories.slice(0, 2);
+    } else {
+        categoryTags = ['Technology'];
     }
+    
+    // Format date nicely
+    const formattedDate = blog.pubDate ? formatDate(blog.pubDate) : '';
+    
+    // Create category badges HTML
+    const categoryHTML = categoryTags.map(cat => 
+        `<span class="blog-card-category">${cat}</span>`
+    ).join('');
+    
     card.innerHTML = `
-        <img src="${blog.thumbnail}" alt="${blog.title}" class="blog-card-image" onerror="this.src='https://via.placeholder.com/600x400?text=Blog+Post'">
-        <div class="blog-card-content">
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
-                <h3 class="blog-card-title" style="margin-bottom: 0;">${blog.title}</h3>
-                ${tagHTML}
-            </div>
-            <p class="blog-card-excerpt">${blog.excerpt}</p>
-            ${blog.pubDate ? `<p style=\"font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.5rem;\">${formatDate(blog.pubDate)}</p>` : ''}
-            <button class="blog-card-button" data-link="${blog.link}" data-title="${blog.title}" data-content="${escapeHTML(blog.content)}">
-                View More
+        <div class="blog-card-thumbnail">
+            <img src="${blog.thumbnail}" alt="${blog.title}" class="blog-card-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="blog-card-img-fallback" style="display: none;"><i class="fas fa-newspaper"></i></div>
+            <div class="blog-card-categories">${categoryHTML}</div>
+        </div>
+        <div class="blog-card-body">
+            ${formattedDate ? `<span class="blog-card-date"><i class="far fa-calendar"></i> ${formattedDate}</span>` : ''}
+            <h3 class="blog-card-heading">${blog.title}</h3>
+            <p class="blog-card-desc">${blog.excerpt}</p>
+            <button class="blog-read-more" data-link="${blog.link}">
+                Read Article <i class="fas fa-arrow-right"></i>
             </button>
         </div>
     `;
     
     // Add click event
-    const viewMoreBtn = card.querySelector('.blog-card-button');
+    const readMoreBtn = card.querySelector('.blog-read-more');
     const handleClick = () => {
-        showBlogContent(blog.link, blog.title, blog.content || blog.description);
+        showBlogContent(blog.link, blog.title, blog.content || blog.description, blog.thumbnail, blog.pubDate, blog.categories);
     };
     
-    viewMoreBtn.addEventListener('click', (e) => {
+    readMoreBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         handleClick();
     });
@@ -1498,7 +1664,7 @@ function initBlogModal() {
     });
 }
 
-async function showBlogContent(blogLink, blogTitle, blogContent) {
+async function showBlogContent(blogLink, blogTitle, blogContent, blogThumbnail, blogDate, blogCategories) {
     const modal = document.getElementById('blogModal');
     const modalTitle = document.getElementById('blogModalTitle');
     const modalBody = document.getElementById('blogModalBody');
@@ -1507,7 +1673,24 @@ async function showBlogContent(blogLink, blogTitle, blogContent) {
     
     if (!modal || !modalTitle || !modalBody) return;
     
+    // Set title in header (will be hidden on mobile via CSS)
     modalTitle.textContent = blogTitle;
+    
+    // Format date
+    const formattedDate = blogDate ? formatDate(blogDate) : '';
+    
+    // Build tags HTML
+    let tagsHTML = '';
+    if (blogCategories && blogCategories.length > 0) {
+        tagsHTML = `
+            <div class="blog-detail-tags">
+                <span class="tags-label">Tags:</span>
+                ${blogCategories.map(cat => `<span class="blog-detail-tag">${cat}</span>`).join('')}
+            </div>
+        `;
+    }
+    
+    // Show loading
     modalBody.innerHTML = `
         <div class="blog-loading">
             <div class="loading-spinner"></div>
@@ -1540,46 +1723,96 @@ async function showBlogContent(blogLink, blogTitle, blogContent) {
         content = content.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
         
         // Make sure images have proper styling
-        content = content.replace(/<img/gi, '<img style="max-width: 100%; height: auto; border-radius: 8px; margin: 1.5rem 0;"');
+        content = content.replace(/<img/gi, '<img style="max-width: 100%; height: auto; border-radius: 12px; margin: 1.5rem 0;"');
         
         // Make links open in new tab
         content = content.replace(/<a href=/gi, '<a target="_blank" rel="noopener noreferrer" href=');
         
-        const blogHTML = `
-            <div class="blog-content">
-                ${content || '<p style="color: var(--text-secondary);">Content not available. Please visit the original post.</p>'}
-                <div style="display: flex; align-items: center; justify-content: flex-end; gap: 0.7rem; padding: 1.2rem 2rem 1.2rem 2rem; background: var(--bg-secondary); border-radius: 10px; margin: 2rem 0 0.5rem 0;">
-                    <div style="display: flex; flex-direction: column; align-items: flex-end;">
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <p style="color: var(--text-primary); margin: 0; font-style: italic; font-size: 1rem; margin-top: 0.18rem;">-Prashant Subedi
-                                <a href="#about" id="authorProfileLink" style="display: inline-block; margin-left: 0.5rem; vertical-align: middle;">
-                                    <img src="assets/images/profile.jpg" alt="Prashant Subedi" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); box-shadow: 0 2px 8px var(--shadow); vertical-align: middle; margin-left: 0.3rem;">
-                                </a>
-                            </p>
+        // Build recommendations HTML from other blogs
+        let recommendationsHTML = '';
+        if (window.allBlogs && window.allBlogs.length > 1) {
+            const otherBlogs = window.allBlogs.filter(b => b.title !== blogTitle).slice(0, 3);
+            if (otherBlogs.length > 0) {
+                recommendationsHTML = `
+                    <div class="blog-recommendations">
+                        <h3 class="recommendations-title">Recommended for you</h3>
+                        <div class="recommendations-grid">
+                            ${otherBlogs.map((blog, index) => `
+                                <div class="recommendation-card" data-blog-index="${window.allBlogs.findIndex(b => b.title === blog.title)}">
+                                    <div class="recommendation-thumbnail">
+                                        <img src="${blog.thumbnail}" alt="${blog.title}" onerror="this.style.display='none';">
+                                        ${blog.categories && blog.categories[0] ? `<span class="recommendation-category">${blog.categories[0]}</span>` : ''}
+                                    </div>
+                                    <div class="recommendation-body">
+                                        <span class="recommendation-date"><i class="far fa-calendar"></i> ${blog.pubDate ? formatDate(blog.pubDate) : ''}</span>
+                                        <h4 class="recommendation-title">${blog.title}</h4>
+                                        <p class="recommendation-desc">${cleanHTML(blog.description || '').substring(0, 80)}...</p>
+                                        <span class="recommendation-link">Read Article <i class="fas fa-arrow-right"></i></span>
+                                    </div>
+                                </div>
+                            `).join('')}
                         </div>
+                    </div>
+                `;
+            }
+        }
+        
+        const blogHTML = `
+            <div class="blog-detail-hero">
+                ${blogThumbnail ? `<img src="${blogThumbnail}" alt="${blogTitle}" class="blog-detail-image">` : ''}
+            </div>
+            <div class="blog-detail-header">
+                <h1 class="blog-detail-title">${blogTitle}</h1>
+                <div class="blog-detail-meta">
+                    <div class="blog-detail-author">
+                        <img src="assets/images/profile.jpg" alt="Prashant Subedi" class="author-avatar">
+                        <div class="author-info">
+                            <span class="author-name">Prashant Subedi</span>
+                            <span class="author-handle">@prashantsubedii</span>
+                        </div>
+                    </div>
+                    <div class="blog-detail-stats">
+                        ${formattedDate ? `<span class="stat-item"><i class="far fa-calendar"></i> ${formattedDate}</span>` : ''}
+                        <span class="stat-item"><i class="far fa-clock"></i> 5 min read</span>
                     </div>
                 </div>
             </div>
+            <div class="blog-detail-content">
+                ${content || '<p style="color: var(--text-secondary);">Content not available. Please visit the original post.</p>'}
+            </div>
+            ${tagsHTML}
+            <div class="blog-detail-footer">
+                <a href="${blogLink}" target="_blank" rel="noopener noreferrer" class="btn-read-on-medium">
+                    <i class="fab fa-medium"></i> Read on Medium
+                </a>
+            </div>
+            ${recommendationsHTML}
         `;
         
         modalBody.innerHTML = blogHTML;
-
-        // Add event to author photo: close modal and scroll to about
-        const authorProfileLink = document.getElementById('authorProfileLink');
-        if (authorProfileLink) {
-            authorProfileLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                modal.classList.remove('active');
-                setTimeout(() => {
-                    const aboutSection = document.getElementById('about');
-                    if (aboutSection) {
-                        aboutSection.scrollIntoView({ behavior: 'smooth' });
-                    } else {
-                        window.location.href = 'index.html#about';
-                    }
-                }, 300);
+        
+        // Add click listeners for recommendation cards
+        const recommendationCards = modalBody.querySelectorAll('.recommendation-card');
+        recommendationCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const blogIndex = parseInt(card.dataset.blogIndex);
+                if (window.allBlogs && window.allBlogs[blogIndex]) {
+                    const blog = window.allBlogs[blogIndex];
+                    // Scroll modal to top before loading new content
+                    const modal = document.getElementById('blogModal');
+                    if (modal) modal.scrollTop = 0;
+                    // Load the clicked blog
+                    showBlogContent(
+                        blog.link,
+                        blog.title,
+                        blog.content || blog.description,
+                        blog.thumbnail,
+                        blog.pubDate,
+                        blog.categories || []
+                    );
+                }
             });
-        }
+        });
         
     } catch (error) {
         console.error('Error loading blog content:', error);

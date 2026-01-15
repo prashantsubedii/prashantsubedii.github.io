@@ -96,7 +96,7 @@ function parseMediumRSS(xmlData) {
         const itemRegex = /<item>([\s\S]*?)<\/item>/g;
         let match;
         
-        while ((match = itemRegex.exec(xmlData)) !== null && blogs.length < 10) {
+        while ((match = itemRegex.exec(xmlData)) !== null && blogs.length < 20) {
             const itemContent = match[1];
             
             // Extract title

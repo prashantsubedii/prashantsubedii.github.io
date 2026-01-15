@@ -3,9 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prashant Subedi | Blog</title>
+    <title>Prashant Subedi | All Articles</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .blogs-page-hero {
+            padding: 6rem 2rem 2rem;
+            text-align: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .blogs-page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .blogs-page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 2.5rem;
+        }
+        
+        .blogs-search-filter {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .blogs-search-box {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .blogs-search-box input {
+            width: 100%;
+            padding: 1rem 1.2rem 1rem 3rem;
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+        
+        .blogs-search-box input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        }
+        
+        .blogs-search-box input::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        .blogs-search-box i {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .blogs-filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.6rem;
+        }
+        
+        .filter-tag {
+            padding: 0.6rem 1.3rem;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+        }
+        
+        .filter-tag:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .filter-tag.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .blogs-page-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+        
+        .blogs-page-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .blogs-page-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .blogs-page-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .blogs-page-title {
+                font-size: 2rem;
+            }
+            
+            .blogs-search-box {
+                max-width: 100%;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .blogs-page-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .blogs-page-hero {
+                padding: 5rem 1.5rem 2rem;
+            }
+            
+            .blogs-page-content {
+                padding: 0 1.5rem 3rem;
+            }
+            
+            .filter-tag {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+        
+        .back-link-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto 1.5rem;
+            text-align: left;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        
+        .back-link:hover {
+            color: var(--primary-color);
+        }
+        
+        .back-link i {
+            font-size: 0.8rem;
+        }
+    </style>
 </head>
 <body>
     <!-- Navbar -->
@@ -19,8 +189,8 @@
                 <li><a href="index.html#about" class="nav-link">About</a></li>
                 <li><a href="index.html#education" class="nav-link">Education</a></li>
                 <li><a href="index.html#skills" class="nav-link">Skills</a></li>
-                <li><a href="index.html#projects" class="nav-link">Projects</a></li>
-                <li><a href="index.html#blog" class="nav-link">Blog</a></li>
+                <li><a href="index.html#featured-projects" class="nav-link">Projects</a></li>
+                <li><a href="blogs.html" class="nav-link active">Blog</a></li>
                 <li><a href="index.html#contact" class="nav-link">Contact</a></li>
             </ul>
             <div class="theme-toggle-container">
@@ -39,36 +209,38 @@
     <!-- Main Content -->
     <main>
         <!-- Page Hero Section -->
-        <section class="page-hero">
-            <div class="page-hero-content">
-                <h1 class="page-hero-title">Explore My Thoughts</h1>
-                <p class="page-hero-subtitle">A collection of insights on software development, AI, and technology</p>
+        <div class="blogs-page-hero">
+            <div class="back-link-container">
+                <a href="index.html#blog" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back</span>
+                </a>
             </div>
-        </section>
+            <h1 class="blogs-page-title">All Articles</h1>
+            <p class="blogs-page-subtitle">Thoughts, tutorials, and insights on development and engineering.</p>
+            
+            <div class="blogs-search-filter">
+                <div class="blogs-search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="blogSearch" placeholder="Search articles, topics, or keywords...">
+                </div>
+                <div class="blogs-filter-tags" id="filterTags">
+                    <span class="filter-tag active" data-filter="all">All</span>
+                    <span class="filter-tag" data-filter="technology">Technology</span>
+                    <span class="filter-tag" data-filter="opinion">Opinion</span>
+                </div>
+            </div>
+        </div>
 
-        <!-- Blog Section -->
-        <section class="blog-section" id="blog">
-            <div class="section-container">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <span class="title-text">All Blogs</span>
-                    </h2>
-                    <div class="title-line-decoration"></div>
-                    <div class="blog-back-button">
-                        <a href="index.html#blog" class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.4rem 0.8rem; display: inline-flex; align-items: center; gap: 0.3rem;">
-                            <i class="fas fa-arrow-left" style="font-size: 0.8rem;"></i>
-                            <span>Back</span>
-                        </a>
-                    </div>
-                </div>
-                <div class="blog-container blog-container-all" id="blogContainer">
-                    <div class="blogs-loading">
-                        <div class="loading-spinner"></div>
-                        <p>Loading blogs...</p>
-                    </div>
+        <!-- Blog Grid -->
+        <div class="blogs-page-content">
+            <div class="blogs-page-grid" id="blogContainer">
+                <div class="blogs-loading">
+                    <div class="loading-spinner"></div>
+                    <p>Loading articles...</p>
                 </div>
             </div>
-        </section>
+        </div>
     </main>
 
     <!-- Footer -->
@@ -108,5 +280,53 @@
     </div>
 
     <script src="js/main.js"></script>
+    <script>
+        // Search and filter functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('blogSearch');
+            const filterTags = document.getElementById('filterTags');
+            
+            // Search functionality
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const query = e.target.value.toLowerCase();
+                    filterBlogs(query, getActiveFilter());
+                });
+            }
+            
+            // Filter tag clicks
+            if (filterTags) {
+                filterTags.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('filter-tag')) {
+                        filterTags.querySelectorAll('.filter-tag').forEach(tag => tag.classList.remove('active'));
+                        e.target.classList.add('active');
+                        const filter = e.target.dataset.filter;
+                        filterBlogs(searchInput?.value?.toLowerCase() || '', filter);
+                    }
+                });
+            }
+            
+            // Filter tags are now static - only All, Technology, Opinion
+        });
+        
+        function getActiveFilter() {
+            const activeTag = document.querySelector('.filter-tag.active');
+            return activeTag ? activeTag.dataset.filter : 'all';
+        }
+        
+        function filterBlogs(query, category) {
+            const cards = document.querySelectorAll('.blog-card-new');
+            cards.forEach(card => {
+                const title = card.querySelector('.blog-card-heading')?.textContent?.toLowerCase() || '';
+                const desc = card.querySelector('.blog-card-desc')?.textContent?.toLowerCase() || '';
+                const cardCategory = card.querySelector('.blog-card-category')?.textContent?.toLowerCase() || '';
+                
+                const matchesQuery = title.includes(query) || desc.includes(query);
+                const matchesCategory = category === 'all' || cardCategory.includes(category);
+                
+                card.style.display = (matchesQuery && matchesCategory) ? 'flex' : 'none';
+            });
+        }
+    </script>
 </body>
 </html>
