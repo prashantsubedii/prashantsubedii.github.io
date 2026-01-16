@@ -355,7 +355,18 @@
                 const cardCategory = card.querySelector('.blog-card-category')?.textContent?.toLowerCase() || '';
                 
                 const matchesQuery = title.includes(query) || desc.includes(query);
-                const matchesCategory = category === 'all' || cardCategory.includes(category);
+                
+                // Expanded category matching - Technology includes all tech-related tags
+                let matchesCategory = false;
+                if (category === 'all') {
+                    matchesCategory = true;
+                } else if (category === 'technology') {
+                    // Match blogs with technology, artificial-intelligence, ai, machine-learning, programming, etc.
+                    const techKeywords = ['technology', 'artificial-intelligence', 'ai', 'machine-learning', 'programming', 'coding', 'web', 'development'];
+                    matchesCategory = techKeywords.some(keyword => cardCategory.includes(keyword));
+                } else if (category === 'opinion') {
+                    matchesCategory = cardCategory.includes(category);
+                }
                 
                 card.style.display = (matchesQuery && matchesCategory) ? 'flex' : 'none';
             });
