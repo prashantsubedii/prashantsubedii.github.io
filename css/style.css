@@ -4207,17 +4207,17 @@ section {
     }
 
     .skills-tabs {
-        gap: 0.5rem;
+        gap: 0.3rem;
         margin-bottom: 2rem;
     }
 
     .skills-tab-btn {
-        padding: 0.6rem 1rem;
-        font-size: 0.85rem;
+        padding: 0.4rem 0.7rem;
+        font-size: 0.75rem;
     }
 
     .skills-tab-btn i {
-        font-size: 0.9rem;
+        font-size: 0.8rem;
     }
     
     .blog-section {
