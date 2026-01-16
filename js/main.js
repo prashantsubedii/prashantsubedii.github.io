@@ -376,19 +376,25 @@ function initSkillsTabs() {
 }
 
 function animateSkillBar(progressBar, percentageElement, targetPercent) {
-    let currentPercent = 0;
-    const duration = 1000; // 1 second (faster animation)
-    const increment = targetPercent / (duration / 16); // 60fps
+    // Use CSS transition for smooth animation
+    const duration = 800; // Match the CSS transition duration
+    const steps = 60;
+    let currentStep = 0;
     
     const timer = setInterval(() => {
-        currentPercent += increment;
-        if (currentPercent >= targetPercent) {
-            currentPercent = targetPercent;
+        currentStep++;
+        const progress = (currentStep / steps) * targetPercent;
+        percentageElement.textContent = Math.round(progress) + '%';
+        
+        if (currentStep >= steps) {
+            percentageElement.textContent = targetPercent + '%';
+            progressBar.style.width = targetPercent + '%';
             clearInterval(timer);
         }
-        progressBar.style.width = currentPercent + '%';
-        percentageElement.textContent = Math.round(currentPercent) + '%';
-    }, 16);
+    }, duration / steps);
+    
+    // Trigger the width animation with CSS transition
+    progressBar.style.width = targetPercent + '%';
 }
 
 // ===== GitHub Pinned Projects (via GraphQL API) =====
