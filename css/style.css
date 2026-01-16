@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
 .readme-modal-back {
     background: var(--bg-secondary);
     border: 1px solid var(--primary-color);
@@ -581,7 +583,7 @@ html {
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Poppins', sans-serif;
     background: var(--bg-primary);
     color: var(--text-primary);
     line-height: 1.6;
@@ -951,14 +953,14 @@ body::before {
 
 .hero-description {
     color: var(--text-secondary);
-    margin-bottom: 1rem;
-    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+    font-size: 1rem;
 }
 
 .hero-description-secondary {
     color: var(--text-secondary);
     margin-bottom: 2rem;
-    font-size: 1rem;
+    font-size: 0.95rem;
 }
 
 .hero-buttons {
@@ -1239,7 +1241,9 @@ section {
     display: flex;
     gap: 2rem;
     margin-top: 2rem;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    justify-content: center;
+    flex-direction: row;
 }
 
 .highlight-item {
@@ -1252,6 +1256,8 @@ section {
     color: var(--primary-color);
     font-weight: 500;
     transition: var(--transition);
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .highlight-item:hover {
@@ -1727,7 +1733,7 @@ section {
     line-height: 1.9;
     position: relative;
     z-index: 1;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 .project-readme-container .readme-content h1,
@@ -1739,7 +1745,7 @@ section {
     position: relative;
     padding-left: 1rem;
     animation: slideInLeft 0.6s ease;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 .project-readme-container .readme-content h1::before,
@@ -1784,7 +1790,7 @@ section {
     border-radius: 6px;
     background: linear-gradient(135deg, rgba(30, 58, 138, 0.02) 0%, rgba(6, 182, 212, 0.02) 100%);
     transition: var(--transition);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 .project-readme-container .readme-content p:hover {
@@ -1803,7 +1809,7 @@ section {
     font-size: 0.9em;
     color: var(--primary-color);
     transition: var(--transition);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 .project-readme-container .readme-content code:hover {
@@ -1819,7 +1825,7 @@ section {
     overflow-x: auto;
     margin: 1rem 0;
     animation: fadeInUp 0.7s ease;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 .project-readme-container .readme-content pre code {
@@ -4351,6 +4357,25 @@ section {
     .project-readme-container {
         max-height: 400px;
         padding: 1rem;
+    }
+
+    .about-highlights {
+        gap: 1rem;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding: 0.5rem 0;
+        justify-content: flex-start;
+    }
+
+    .highlight-item {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .highlight-item i {
+        font-size: 1rem;
     }
 }
 
