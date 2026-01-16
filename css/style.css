@@ -4396,8 +4396,9 @@ section {
     }
     
     .blog-modal-header {
-        padding: 1rem 1.5rem;
+        padding: 2rem 1.5rem 1rem 1.5rem;
         justify-content: space-between;
+        margin-top: 1rem;
     }
     
     .blog-modal-header h2 {
