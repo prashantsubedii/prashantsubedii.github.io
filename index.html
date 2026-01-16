@@ -241,7 +241,29 @@
                     </h2>
                     <div class="title-line-decoration"></div>
                 </div>
-                <div class="skills-container">
+                
+                <!-- Skills Tabs -->
+                <div class="skills-tabs">
+                    <button class="skills-tab-btn active" data-tab="languages">
+                        <i class="fas fa-code"></i>
+                        Languages
+                    </button>
+                    <button class="skills-tab-btn" data-tab="tools">
+                        <i class="fas fa-tools"></i>
+                        Tools
+                    </button>
+                    <button class="skills-tab-btn" data-tab="soft-skills">
+                        <i class="fas fa-star"></i>
+                        Soft Skills
+                    </button>
+                    <!-- <button class="skills-tab-btn" data-tab="frameworks">
+                        <i class="fas fa-layer-group"></i>
+                        Frameworks
+                    </button> -->
+                </div>
+
+                <!-- Languages Tab Content -->
+                <div class="skills-container active" id="languages-tab">
                     <div class="skill-item">
                         <div class="skill-header">
                             <span class="skill-name">
@@ -303,6 +325,190 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Tools Tab Content -->
+                <div class="skills-container" id="tools-tab">
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fab fa-git-alt"></i>
+                                Git
+                            </span>
+                            <span class="skill-percentage" data-percent="85">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="git" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fas fa-cube"></i>
+                                Django
+                            </span>
+                            <span class="skill-percentage" data-percent="72">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="django" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <svg class="skill-icon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="50" cy="50" r="45" fill="none" stroke="var(--primary-color)" stroke-width="8"/>
+                                    <path d="M 50 10 Q 80 30 85 60 Q 80 50 65 45 Q 55 42 50 50" fill="var(--primary-color)" opacity="0.8"/>
+                                    <path d="M 50 10 Q 70 15 75 35" fill="none" stroke="var(--primary-color)" stroke-width="6"/>
+                                </svg>
+                                Anaconda
+                            </span>
+                            <span class="skill-percentage" data-percent="70">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="anaconda" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fab fa-linux"></i>
+                                Linux
+                            </span>
+                            <span class="skill-percentage" data-percent="75">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="linux" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fab fa-docker"></i>
+                                Docker
+                            </span>
+                            <span class="skill-percentage" data-percent="68">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="docker" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Soft Skills Tab Content -->
+                <div class="skills-container" id="soft-skills-tab">
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fas fa-comments"></i>
+                                Communication Skills
+                            </span>
+                            <span class="skill-percentage" data-percent="80">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="communication" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fas fa-handshake"></i>
+                                Team Collaboration
+                            </span>
+                            <span class="skill-percentage" data-percent="82">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="teamwork" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fas fa-lightbulb"></i>
+                                Problem Solving
+                            </span>
+                            <span class="skill-percentage" data-percent="75">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="problem-solving" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fas fa-brain"></i>
+                                Analytical Thinking
+                            </span>
+                            <span class="skill-percentage" data-percent="79">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="analytical" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fas fa-clock"></i>
+                                Time Management
+                            </span>
+                            <span class="skill-percentage" data-percent="79">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="time-management" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Frameworks Tab Content -->
+                <!-- <div class="skills-container" id="frameworks-tab">
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fab fa-react"></i>
+                                React
+                            </span>
+                            <span class="skill-percentage" data-percent="72">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="react" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fas fa-bolt"></i>
+                                Django REST
+                            </span>
+                            <span class="skill-percentage" data-percent="70">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="djangorest" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fab fa-node-js"></i>
+                                Node.js
+                            </span>
+                            <span class="skill-percentage" data-percent="68">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="nodejs" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fas fa-database"></i>
+                                SQL/NoSQL
+                            </span>
+                            <span class="skill-percentage" data-percent="75">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="databases" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div> -->
             </div>
         </section>
 

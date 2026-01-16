@@ -331,6 +331,48 @@ function initSkillsAnimation() {
     skillItems.forEach(item => {
         observer.observe(item);
     });
+    
+    // Initialize tab switching
+    initSkillsTabs();
+}
+
+function initSkillsTabs() {
+    const tabButtons = document.querySelectorAll('.skills-tab-btn');
+    const skillContainers = document.querySelectorAll('.skills-container');
+    
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabName = btn.getAttribute('data-tab');
+            
+            // Remove active class from all buttons and containers
+            tabButtons.forEach(b => b.classList.remove('active'));
+            skillContainers.forEach(container => container.classList.remove('active'));
+            
+            // Add active class to clicked button and corresponding container
+            btn.classList.add('active');
+            const activeTab = document.getElementById(`${tabName}-tab`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+                
+                // Trigger animation for skill bars in this container
+                const skillItems = activeTab.querySelectorAll('.skill-item');
+                skillItems.forEach(item => {
+                    const progressBar = item.querySelector('.skill-progress');
+                    const percentageElement = item.querySelector('.skill-percentage');
+                    
+                    // Reset the animation
+                    progressBar.style.width = '0%';
+                    percentageElement.textContent = '0%';
+                    
+                    // Trigger animation
+                    setTimeout(() => {
+                        const targetPercent = parseInt(percentageElement.getAttribute('data-percent'));
+                        animateSkillBar(progressBar, percentageElement, targetPercent);
+                    }, 50);
+                });
+            }
+        });
+    });
 }
 
 function animateSkillBar(progressBar, percentageElement, targetPercent) {
