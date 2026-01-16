@@ -4511,6 +4511,10 @@ section {
     .about-text {
         padding: 0 0.5rem;
     }
+
+    .about-paragraph {
+        text-align: justify;
+    }
     
     .about-paragraph {
         font-size: 0.95rem;
