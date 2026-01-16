@@ -4146,6 +4146,26 @@ section {
         justify-content: center;
     }
     
+    /* About section responsive for tablets */
+    .about-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 2rem;
+    }
+    
+    .about-image-container {
+        justify-content: center;
+    }
+    
+    .about-image-frame {
+        width: 250px;
+        height: 250px;
+    }
+    
+    .about-paragraph {
+        text-align: left;
+    }
+    
     .blog-section {
         padding: 1.5rem 1rem 6rem 1rem;
         padding-top: 6rem;
@@ -4474,11 +4494,44 @@ section {
     .about-content {
         grid-template-columns: 1fr;
         text-align: center;
+        gap: 1.5rem;
+        padding: 0;
     }
     
     .about-image-container {
         justify-content: center;
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .about-image-frame {
+        width: 200px;
+        height: 200px;
+    }
+    
+    .about-text {
+        padding: 0 0.5rem;
+    }
+    
+    .about-paragraph {
+        font-size: 0.95rem;
+        line-height: 1.7;
+        margin-bottom: 1rem;
+        text-align: left;
+    }
+    
+    .about-highlights {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+    }
+    
+    .highlight-item {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
     }
 
     .nav-container {
@@ -4492,6 +4545,16 @@ section {
 
     section {
         padding: 4rem 1rem;
+        overflow-x: hidden;
+    }
+    
+    .section-container {
+        padding: 0 0.75rem;
+        overflow-x: hidden;
+    }
+    
+    .about-section {
+        padding: 3rem 0.5rem;
     }
 }
 
@@ -4595,6 +4658,30 @@ section {
         width: 32px;
         height: 32px;
         font-size: 1rem;
+    }
+    
+    /* About section mobile fixes */
+    .about-section {
+        padding: 2.5rem 0.5rem;
+    }
+    
+    .about-image-frame {
+        width: 160px;
+        height: 160px;
+    }
+    
+    .about-paragraph {
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+    
+    .highlight-item {
+        font-size: 0.8rem;
+        padding: 0.5rem 0.8rem;
+    }
+    
+    .highlight-item i {
+        font-size: 0.9rem;
     }
     
     .readme-modal-header {
@@ -4703,7 +4790,6 @@ section {
     .readme-content table td {
         padding: 0.6rem;
         font-size: 0.85rem;
-    }
     }
     
     .footer {

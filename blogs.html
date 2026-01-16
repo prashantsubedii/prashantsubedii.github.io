@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .blogs-page-hero {
-            padding: 6rem 2rem 2rem;
+            padding: 7rem 2rem 2rem;
             text-align: center;
             max-width: 1200px;
             margin: 0 auto;
@@ -139,7 +139,7 @@
             }
             
             .blogs-page-hero {
-                padding: 5rem 1.5rem 2rem;
+                padding: 6.5rem 1.5rem 2rem;
             }
             
             .blogs-page-content {
@@ -152,61 +152,88 @@
             }
         }
         
-        .back-button-fixed {
+        /* Title row with back button */
+        .blogs-title-row {
+            display: block;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .back-button-inline {
             position: fixed;
-            top: 100px;
-            left: 2rem;
-            z-index: 99;
+            top: 100px; /* Increased from 90px */
+            left: 1.5rem; /* Adjusted for better spacing */
+            z-index: 999; /* Below navbar but above content */
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 0.3rem;
-            padding: 0.5rem 0.9rem;
+            gap: 0.2rem;
+            padding: 0.4rem 0.8rem; /* Slightly larger for better touch target */
             background: var(--gradient-1);
             color: white;
             text-decoration: none;
-            font-size: 0.8rem;
+            font-size: 0.75rem; /* Standardized font size */
             font-weight: 600;
             border-radius: 50px;
             transition: var(--transition);
-            box-shadow: 0 4px 15px var(--shadow);
+            box-shadow: 0 3px 10px var(--shadow);
             border: none;
             cursor: pointer;
             white-space: nowrap;
         }
         
-        .back-button-fixed:hover {
+        .back-button-inline:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px var(--shadow-lg);
         }
         
-        .back-button-fixed i {
-            font-size: 0.7rem;
+        .back-button-inline i {
+            font-size: 0.6rem; /* Standardized icon size */
         }
 
         @media (max-width: 768px) {
-            .back-button-fixed {
-                top: 80px;
+            .back-button-inline {
+                top: 95px; /* Adjusted for smaller screens */
                 left: 1rem;
-                padding: 0.45rem 0.85rem;
-                font-size: 0.75rem;
+                padding: 0.35rem 0.7rem;
+                font-size: 0.7rem;
             }
-
-            .back-button-fixed i {
-                font-size: 0.65rem;
+            
+            .back-button-inline i {
+                font-size: 0.55rem;
+            }
+            
+            .blogs-page-hero {
+                padding: 6rem 1.5rem 2rem;
+            }
+            
+            .blogs-page-title {
+                font-size: 1.8rem;
             }
         }
 
         @media (max-width: 480px) {
-            .back-button-fixed {
-                top: 70px;
-                left: 0.8rem;
-                padding: 0.4rem 0.75rem;
-                font-size: 0.7rem;
+            .back-button-inline {
+                top: 90px; /* Adjusted for smallest screens */
+                left: 1rem;
+                padding: 0.3rem 0.6rem;
+                font-size: 0.65rem;
             }
 
-            .back-button-fixed i {
-                font-size: 0.6rem;
+            .back-button-inline i {
+                font-size: 0.5rem;
+            }
+            
+            .blogs-page-hero {
+                padding: 5.5rem 1rem 1.5rem;
+            }
+            
+            .blogs-page-title {
+                font-size: 1.5rem;
+            }
+            
+            .blogs-page-subtitle {
+                font-size: 0.85rem;
             }
         }
     </style>
@@ -242,15 +269,15 @@
 
     <!-- Main Content -->
     <main>
-        <!-- Back Button -->
-        <a href="index.html#blog" class="back-button-fixed">
-            <i class="fas fa-arrow-left"></i>
-            <span>Back</span>
-        </a>
-
         <!-- Page Hero Section -->
         <div class="blogs-page-hero">
-            <h1 class="blogs-page-title">All Articles</h1>
+            <div class="blogs-title-row">
+                <a href="index.html#blog" class="back-button-inline">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back</span>
+                </a>
+                <h1 class="blogs-page-title">All Articles</h1>
+            </div>
             <p class="blogs-page-subtitle">Thoughts, tutorials, and insights on development and engineering.</p>
             
             <div class="blogs-search-filter">
