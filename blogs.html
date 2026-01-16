@@ -356,15 +356,15 @@
                 
                 const matchesQuery = title.includes(query) || desc.includes(query);
                 
-                // Expanded category matching - Technology includes all tech-related tags
+                // Category matching
                 let matchesCategory = false;
                 if (category === 'all') {
                     matchesCategory = true;
                 } else if (category === 'technology') {
-                    // Match blogs with technology, artificial-intelligence, ai, machine-learning, programming, etc.
-                    const techKeywords = ['technology', 'artificial-intelligence', 'ai', 'machine-learning', 'programming', 'coding', 'web', 'development'];
-                    matchesCategory = techKeywords.some(keyword => cardCategory.includes(keyword));
-                } else if (category === 'opinion') {
+                    // Show any blog that has "artificial-intelligence" OR "technology" tag
+                    matchesCategory = cardCategory.includes('artificial-intelligence') || cardCategory.includes('technology');
+                } else {
+                    // For other categories, match exactly
                     matchesCategory = cardCategory.includes(category);
                 }
                 
