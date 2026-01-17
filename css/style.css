@@ -3384,9 +3384,11 @@ section {
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
-    position: sticky;
+    position: fixed;
     top: 0;
-    z-index: 10;
+    left: 0;
+    right: 0;
+    z-index: 10001;
 }
 
 .blog-modal-header h2 {
@@ -3447,6 +3449,7 @@ section {
 
 .blog-modal-body {
     padding: 0;
+    padding-top: 60px; /* Account for fixed header */
     flex: 1;
     color: var(--text-primary);
     animation: fadeIn 0.6s ease 0.2s both;
@@ -4900,9 +4903,9 @@ section {
     }
     
     .blog-modal-header {
-        padding: 2rem 1.5rem 1rem 1.5rem;
+        padding: 1rem 1.5rem;
         justify-content: space-between;
-        margin-top: 1rem;
+        margin-top: 0;
     }
     
     .blog-modal-header h2 {
@@ -4917,7 +4920,11 @@ section {
         font-size: 1.3rem;
     }
 
-    .blog-modal-body,
+    .blog-modal-body {
+        padding: 1.5rem;
+        padding-top: 70px;
+    }
+
     .readme-modal-body {
         padding: 1.5rem;
     }
@@ -5217,9 +5224,9 @@ section {
     }
     
     .blog-modal-header {
-        padding: 2rem 1.5rem 1rem 1.5rem;
+        padding: 1rem 1.5rem;
         justify-content: space-between;
-        margin-top: 1rem;
+        margin-top: 0;
     }
     
     .blog-modal-header h2 {
@@ -5234,7 +5241,11 @@ section {
         font-size: 1.3rem;
     }
 
-    .blog-modal-body,
+    .blog-modal-body {
+        padding: 1.5rem;
+        padding-top: 70px;
+    }
+
     .readme-modal-body {
         padding: 1.5rem;
     }
