@@ -1,7 +1,32 @@
+// ===== Splash Screen =====
+function initSplashScreen() {
+    const splashScreen = document.getElementById('splashScreen');
+    
+    if (!splashScreen) return;
+    
+    // Apply current theme to splash screen
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    if (savedTheme === 'light') {
+        splashScreen.classList.add('light-theme');
+    }
+    
+    // Hide splash screen after 1.5 seconds
+    setTimeout(() => {
+        splashScreen.classList.add('hidden');
+        // Remove from DOM after transition
+        setTimeout(() => {
+            splashScreen.style.display = 'none';
+        }, 500);
+    }, 1500);
+}
+
+// Initialize splash screen immediately
+initSplashScreen();
+
 // ===== Theme Toggle =====
 const themeToggle = document.getElementById('themeToggle');
 const body = document.body;
-const currentTheme = localStorage.getItem('theme') || 'light';
+const currentTheme = localStorage.getItem('theme') || 'dark';
 
 // Set initial theme
 if (currentTheme === 'dark') {
