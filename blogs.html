@@ -7,7 +7,35 @@
     <link rel="icon" type="image/png" href="assets/images/icon.png">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Nepali Font - Noto Sans Devanagari for clean readable Nepali text -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Nepali Font Styling */
+        .nepali-text,
+        .blog-modal.nepali-mode .blog-detail-title,
+        .blog-modal.nepali-mode .blog-detail-content,
+        .blog-modal.nepali-mode .blog-detail-content p,
+        .blog-modal.nepali-mode .blog-detail-content h1,
+        .blog-modal.nepali-mode .blog-detail-content h2,
+        .blog-modal.nepali-mode .blog-detail-content h3,
+        .blog-modal.nepali-mode .blog-detail-content h4,
+        .blog-modal.nepali-mode .blog-detail-content li,
+        .blog-modal.nepali-mode .blog-detail-content blockquote {
+            font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif !important;
+            line-height: 1.8 !important;
+        }
+        
+        .blog-modal.nepali-mode .blog-detail-title {
+            font-size: 1.9rem;
+            line-height: 1.5 !important;
+        }
+        
+        .blog-modal.nepali-mode .blog-detail-content {
+            font-size: 1.05rem;
+        }
+        
         .blogs-page-hero {
             padding: 7rem 2rem 2rem;
             text-align: center;
@@ -236,9 +264,120 @@
                 font-size: 0.85rem;
             }
         }
+        /* Language Toggle Styles */
+        .language-toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-tertiary);
+            padding: 4px;
+            border-radius: 50px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .lang-btn {
+            padding: 0.5rem 1.2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: transparent;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+        }
+        
+        .lang-btn:hover {
+            color: var(--text-primary);
+        }
+        
+        .lang-btn.active {
+            background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
+            color: white;
+            box-shadow: 0 2px 10px rgba(249, 115, 22, 0.3);
+        }
+        
+        /* Dark theme adjustments */
+        [data-theme="dark"] .lang-btn:not(.active) {
+            color: var(--text-secondary);
+        }
+        
+        [data-theme="dark"] .lang-btn:not(.active):hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Translation loading indicator */
+        .translating-indicator {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            z-index: 10002;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .translating-indicator.show {
+            display: flex;
+            animation: fadeInDown 0.3s ease;
+        }
+        
+        .translating-indicator i {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive language toggle */
+        @media (max-width: 768px) {
+            .language-toggle-container {
+                padding: 3px;
+            }
+            
+            .lang-btn {
+                padding: 0.4rem 0.9rem;
+                font-size: 0.7rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .lang-btn {
+                padding: 0.35rem 0.7rem;
+                font-size: 0.65rem;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Translation Loading Indicator -->
+    <div class="translating-indicator" id="translatingIndicator">
+        <i class="fas fa-spinner"></i>
+        <span>Translating...</span>
+    </div>
     <!-- Navbar -->
     <nav class="navbar">
         <div class="nav-container">
@@ -326,6 +465,17 @@
                     <i class="fas fa-arrow-left"></i>
                     <span>Back</span>
                 </button>
+                
+                <!-- Language Toggle -->
+                <div class="language-toggle-container">
+                    <button class="lang-btn active" data-lang="en" id="langEnglish">
+                        ENGLISH
+                    </button>
+                    <button class="lang-btn" data-lang="ne" id="langNepali">
+                        नेपाली
+                    </button>
+                </div>
+                
                 <h2 id="blogModalTitle">Blog Post</h2>
                 <button class="blog-modal-close" id="blogModalClose">
                     <i class="fas fa-times"></i>
@@ -398,6 +548,229 @@
                 
                 card.style.display = (matchesQuery && matchesCategory) ? 'flex' : 'none';
             });
+        }
+        
+        // ===== Language Translation Feature =====
+        let currentLanguage = 'en';
+        let originalContent = {};
+        let translatedContent = {};
+        
+        // Initialize language toggle
+        function initLanguageToggle() {
+            const langEnglish = document.getElementById('langEnglish');
+            const langNepali = document.getElementById('langNepali');
+            
+            if (langEnglish) {
+                langEnglish.addEventListener('click', () => switchLanguage('en'));
+            }
+            
+            if (langNepali) {
+                langNepali.addEventListener('click', () => switchLanguage('ne'));
+            }
+        }
+        
+        // Switch language function
+        async function switchLanguage(lang) {
+            if (lang === currentLanguage) return;
+            
+            const langEnglish = document.getElementById('langEnglish');
+            const langNepali = document.getElementById('langNepali');
+            const indicator = document.getElementById('translatingIndicator');
+            const blogModal = document.getElementById('blogModal');
+            
+            // Update button states and modal class for font styling
+            if (lang === 'en') {
+                langEnglish?.classList.add('active');
+                langNepali?.classList.remove('active');
+                blogModal?.classList.remove('nepali-mode');
+            } else {
+                langNepali?.classList.add('active');
+                langEnglish?.classList.remove('active');
+                blogModal?.classList.add('nepali-mode');
+            }
+            
+            currentLanguage = lang;
+            
+            // Get translatable content
+            const blogTitle = document.querySelector('.blog-detail-title');
+            const blogContent = document.querySelector('.blog-detail-content');
+            
+            if (!blogTitle && !blogContent) return;
+            
+            // Store original content if not stored
+            if (!originalContent.title && blogTitle) {
+                originalContent.title = blogTitle.innerHTML;
+            }
+            if (!originalContent.content && blogContent) {
+                originalContent.content = blogContent.innerHTML;
+            }
+            
+            if (lang === 'en') {
+                // Restore original English content
+                if (originalContent.title && blogTitle) {
+                    blogTitle.innerHTML = originalContent.title;
+                }
+                if (originalContent.content && blogContent) {
+                    blogContent.innerHTML = originalContent.content;
+                }
+            } else {
+                // Translate to Nepali
+                if (indicator) indicator.classList.add('show');
+                
+                try {
+                    // Check if we have cached translation
+                    if (translatedContent.title && translatedContent.content) {
+                        if (blogTitle) blogTitle.innerHTML = translatedContent.title;
+                        if (blogContent) blogContent.innerHTML = translatedContent.content;
+                    } else {
+                        // Translate title
+                        if (blogTitle && originalContent.title) {
+                            const translatedTitle = await translateText(originalContent.title, 'ne');
+                            blogTitle.innerHTML = translatedTitle;
+                            translatedContent.title = translatedTitle;
+                        }
+                        
+                        // Translate content (in chunks to handle large content)
+                        if (blogContent && originalContent.content) {
+                            const translatedContentText = await translateHTML(originalContent.content, 'ne');
+                            blogContent.innerHTML = translatedContentText;
+                            translatedContent.content = translatedContentText;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Translation error:', error);
+                    // Show error message
+                    showTranslationError();
+                }
+                
+                if (indicator) indicator.classList.remove('show');
+            }
+        }
+        
+        // Translate text using Google Translate API (free method via proxy)
+        async function translateText(text, targetLang) {
+            // Clean HTML tags for translation
+            const cleanText = text.replace(/<[^>]*>/g, ' ').trim();
+            if (!cleanText) return text;
+            
+            try {
+                const response = await fetch(
+                    `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLang}&dt=t&q=${encodeURIComponent(cleanText)}`
+                );
+                const data = await response.json();
+                
+                if (data && data[0]) {
+                    let translated = '';
+                    data[0].forEach(item => {
+                        if (item[0]) translated += item[0];
+                    });
+                    return translated;
+                }
+                return text;
+            } catch (error) {
+                console.error('Translation API error:', error);
+                return text;
+            }
+        }
+        
+        // Translate HTML while preserving structure
+        async function translateHTML(html, targetLang) {
+            // Create a temporary div to parse HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            
+            // Get all text nodes
+            const textNodes = [];
+            const walker = document.createTreeWalker(
+                tempDiv,
+                NodeFilter.SHOW_TEXT,
+                null,
+                false
+            );
+            
+            let node;
+            while (node = walker.nextNode()) {
+                const text = node.textContent.trim();
+                if (text && text.length > 1) {
+                    textNodes.push(node);
+                }
+            }
+            
+            // Translate text nodes in batches
+            const batchSize = 10;
+            for (let i = 0; i < textNodes.length; i += batchSize) {
+                const batch = textNodes.slice(i, i + batchSize);
+                const promises = batch.map(async (textNode) => {
+                    const originalText = textNode.textContent;
+                    const translated = await translateText(originalText, targetLang);
+                    textNode.textContent = translated;
+                });
+                await Promise.all(promises);
+            }
+            
+            return tempDiv.innerHTML;
+        }
+        
+        // Show translation error
+        function showTranslationError() {
+            const indicator = document.getElementById('translatingIndicator');
+            if (indicator) {
+                indicator.innerHTML = '<i class="fas fa-exclamation-triangle"></i><span>Translation unavailable</span>';
+                indicator.style.background = '#ef4444';
+                indicator.classList.add('show');
+                setTimeout(() => {
+                    indicator.classList.remove('show');
+                    indicator.innerHTML = '<i class="fas fa-spinner"></i><span>Translating...</span>';
+                    indicator.style.background = '';
+                }, 2000);
+            }
+        }
+        
+        // Reset translation state when modal is closed or new blog is opened
+        function resetTranslationState() {
+            currentLanguage = 'en';
+            originalContent = {};
+            translatedContent = {};
+            
+            const langEnglish = document.getElementById('langEnglish');
+            const langNepali = document.getElementById('langNepali');
+            const blogModal = document.getElementById('blogModal');
+            
+            langEnglish?.classList.add('active');
+            langNepali?.classList.remove('active');
+            blogModal?.classList.remove('nepali-mode');
+        }
+        
+        // Override the modal close to reset translation state
+        const originalCloseModal = () => {
+            const modal = document.getElementById('blogModal');
+            if (modal) modal.classList.remove('active');
+            resetTranslationState();
+        };
+        
+        // Initialize on DOM load
+        document.addEventListener('DOMContentLoaded', () => {
+            initLanguageToggle();
+            
+            // Add reset on modal close
+            const closeBtn = document.getElementById('blogModalClose');
+            const backBtn = document.getElementById('blogModalBack');
+            
+            if (closeBtn) {
+                closeBtn.addEventListener('click', resetTranslationState);
+            }
+            if (backBtn) {
+                backBtn.addEventListener('click', resetTranslationState);
+            }
+        });
+        
+        // Also reset when a new blog is opened (hook into showBlogContent)
+        const originalShowBlogContent = window.showBlogContent;
+        if (typeof originalShowBlogContent === 'function') {
+            window.showBlogContent = function(...args) {
+                resetTranslationState();
+                return originalShowBlogContent.apply(this, args);
+            };
         }
     </script>
 </body>
