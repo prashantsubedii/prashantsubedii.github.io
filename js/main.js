@@ -1383,6 +1383,9 @@ function removeProjectStructure(text) {
 function convertMarkdownToHTML(markdown) {
     let html = markdown;
     
+    // Parse tables first (before other processing)
+    html = parseMarkdownTables(html);
+    
     // Headers
     html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
     html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
@@ -1419,13 +1422,105 @@ function convertMarkdownToHTML(markdown) {
     
     // Paragraphs (handle remaining text)
     html = html.split('\n\n').map(para => {
-        if (para.trim() && !para.match(/^<[h|u|o|p|b|d]/)) {
+        if (para.trim() && !para.match(/^<[h|u|o|p|b|d|t]/)) {
             return `<p>${para}</p>`;
         }
         return para;
     }).join('\n');
     
     return html;
+}
+
+// Parse markdown tables into HTML tables
+function parseMarkdownTables(markdown) {
+    const lines = markdown.split('\n');
+    let result = [];
+    let i = 0;
+    
+    while (i < lines.length) {
+        const line = lines[i];
+        
+        // Check if this line looks like a table row (contains |)
+        if (line.trim().includes('|') && line.trim().startsWith('|')) {
+            // Collect all consecutive table lines
+            let tableLines = [];
+            while (i < lines.length && lines[i].trim().includes('|')) {
+                tableLines.push(lines[i]);
+                i++;
+            }
+            
+            // Parse the table
+            if (tableLines.length >= 2) {
+                const tableHTML = convertTableLinesToHTML(tableLines);
+                result.push(tableHTML);
+            } else {
+                // Not a valid table, add lines back as-is
+                result.push(...tableLines);
+            }
+        } else {
+            result.push(line);
+            i++;
+        }
+    }
+    
+    return result.join('\n');
+}
+
+// Convert table lines to HTML
+function convertTableLinesToHTML(tableLines) {
+    if (tableLines.length < 2) return tableLines.join('\n');
+    
+    // Parse header row
+    const headerRow = tableLines[0];
+    const headers = parseTableRow(headerRow);
+    
+    // Check for separator row (contains dashes)
+    let dataStartIndex = 1;
+    if (tableLines[1] && tableLines[1].match(/^[\|\s\-:]+$/)) {
+        dataStartIndex = 2;
+    }
+    
+    // Parse data rows
+    const dataRows = tableLines.slice(dataStartIndex).map(row => parseTableRow(row));
+    
+    // Build HTML table
+    let html = '<table class="markdown-table">\n';
+    
+    // Add header
+    if (headers.length > 0) {
+        html += '  <thead>\n    <tr>\n';
+        headers.forEach(header => {
+            html += `      <th>${header.trim()}</th>\n`;
+        });
+        html += '    </tr>\n  </thead>\n';
+    }
+    
+    // Add body
+    if (dataRows.length > 0) {
+        html += '  <tbody>\n';
+        dataRows.forEach(row => {
+            if (row.length > 0 && row.some(cell => cell.trim())) {
+                html += '    <tr>\n';
+                row.forEach(cell => {
+                    html += `      <td>${cell.trim()}</td>\n`;
+                });
+                html += '    </tr>\n';
+            }
+        });
+        html += '  </tbody>\n';
+    }
+    
+    html += '</table>';
+    return html;
+}
+
+// Parse a single table row
+function parseTableRow(row) {
+    // Remove leading and trailing pipes, then split by pipe
+    let cleaned = row.trim();
+    if (cleaned.startsWith('|')) cleaned = cleaned.substring(1);
+    if (cleaned.endsWith('|')) cleaned = cleaned.slice(0, -1);
+    return cleaned.split('|');
 }
 
 // ===== Initialize README buttons dynamically =====

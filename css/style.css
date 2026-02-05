@@ -137,7 +137,6 @@
     position: relative;
     z-index: 2;
     text-align: center;
-    /* ensure content is perfectly centered both horizontally and vertically */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -147,22 +146,21 @@
 /* Logo */
 .splash-logo {
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     margin-bottom: 2rem;
     animation: fadeInDown 0.8s ease forwards;
-    width: 100%; /* full width to allow true centering */
 }
 
 .splash-logo-img {
-    display: block; /* remove inline spacing and ensure centered */
-    margin: 0 auto;
-    width: 180px;
+    width: 200px;
     height: auto;
     object-fit: contain;
     filter: drop-shadow(0 0 30px rgba(59, 130, 246, 0.5));
     animation: logo-pulse 2s ease-in-out infinite;
+    position: relative;
+    left: 85px;
+    top: 20px;
 }
 
 @keyframes logo-pulse {
@@ -2387,6 +2385,95 @@ section {
 
 .project-readme-container .readme-content table tr:hover {
     background: linear-gradient(135deg, rgba(30, 58, 138, 0.04) 0%, rgba(6, 182, 212, 0.04) 100%);
+}
+
+/* Enhanced Markdown Table Styling */
+.project-readme-container .readme-content .markdown-table,
+.readme-content .markdown-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-color);
+    font-size: 0.95rem;
+}
+
+.project-readme-container .readme-content .markdown-table thead,
+.readme-content .markdown-table thead {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+}
+
+.project-readme-container .readme-content .markdown-table th,
+.readme-content .markdown-table th {
+    color: white;
+    padding: 1rem 1.2rem;
+    text-align: left;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    border-bottom: none;
+}
+
+.project-readme-container .readme-content .markdown-table td,
+.readme-content .markdown-table td {
+    padding: 0.9rem 1.2rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    vertical-align: top;
+    line-height: 1.6;
+}
+
+.project-readme-container .readme-content .markdown-table tbody tr:last-child td,
+.readme-content .markdown-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.project-readme-container .readme-content .markdown-table tbody tr:nth-child(even),
+.readme-content .markdown-table tbody tr:nth-child(even) {
+    background: rgba(59, 130, 246, 0.03);
+}
+
+.project-readme-container .readme-content .markdown-table tbody tr:hover,
+.readme-content .markdown-table tbody tr:hover {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(6, 182, 212, 0.08) 100%);
+}
+
+/* Dark theme table adjustments */
+[data-theme="dark"] .project-readme-container .readme-content .markdown-table,
+[data-theme="dark"] .readme-content .markdown-table {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .project-readme-container .readme-content .markdown-table td,
+[data-theme="dark"] .readme-content .markdown-table td {
+    color: #cbd5e1;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .project-readme-container .readme-content .markdown-table tbody tr:nth-child(even),
+[data-theme="dark"] .readme-content .markdown-table tbody tr:nth-child(even) {
+    background: rgba(59, 130, 246, 0.05);
+}
+
+/* Responsive table - horizontal scroll on small screens */
+.project-readme-container .readme-content .table-wrapper,
+.readme-content .table-wrapper {
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    border-radius: 12px;
+}
+
+@media (max-width: 768px) {
+    .project-readme-container .readme-content .markdown-table th,
+    .readme-content .markdown-table th,
+    .project-readme-container .readme-content .markdown-table td,
+    .readme-content .markdown-table td {
+        padding: 0.7rem 0.9rem;
+        font-size: 0.85rem;
+    }
 }
 
 .project-readme-container .readme-content img {
