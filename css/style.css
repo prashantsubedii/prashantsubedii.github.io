@@ -153,14 +153,12 @@
 }
 
 .splash-logo-img {
-    width: 200px;
+    width: clamp(110px, 32vw, 150px);
     height: auto;
+    max-width: 80%;
     object-fit: contain;
     filter: drop-shadow(0 0 30px rgba(59, 130, 246, 0.5));
     animation: logo-pulse 2s ease-in-out infinite;
-    position: relative;
-    left: 85px;
-    top: 20px;
 }
 
 @keyframes logo-pulse {
@@ -1411,10 +1409,11 @@ body::before {
 }
 
 .hero-name {
-    font-size: 3.5rem;
+    font-size: clamp(2rem, 7vw, 3.5rem);
     font-weight: 700;
     margin-bottom: 1rem;
     line-height: 1.2;
+    word-break: break-word;
 }
 
 .name-highlight {
@@ -2021,8 +2020,126 @@ section {
     animation: spin 1s linear infinite;
 }
 
+/* When the Lottie animation is mounted, drop the CSS spinner look */
+.loading-spinner.lottie-mounted {
+    width: clamp(120px, 40vw, 170px);
+    height: auto;
+    border: none;
+    border-radius: 0;
+    animation: none;
+}
+.loading-spinner.lottie-mounted svg {
+    width: 100% !important;
+    height: auto !important;
+}
+
 @keyframes spin {
     to { transform: rotate(360deg); }
+}
+
+/* ===== Splash screen Lottie ===== */
+.splash-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+.splash-lottie {
+    width: min(340px, 72vw);
+    max-width: 90%;
+    height: auto;
+}
+.splash-lottie svg {
+    width: 100% !important;
+    height: auto !important;
+}
+.splash-caption {
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    background: var(--gradient-1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: splash-caption-pulse 1.4s ease-in-out infinite;
+}
+.splash-caption::after {
+    content: '';
+    animation: splash-dots 1.5s steps(1, end) infinite;
+    -webkit-text-fill-color: var(--primary-color);
+}
+@keyframes splash-caption-pulse {
+    0%, 100% { opacity: 0.65; }
+    50% { opacity: 1; }
+}
+@keyframes splash-dots {
+    0% { content: ''; }
+    25% { content: '.'; }
+    50% { content: '..'; }
+    75% { content: '...'; }
+}
+
+/* ===== Inline button loader (contact form) ===== */
+.btn-lottie {
+    display: inline-flex;
+    width: 42px;
+    height: 24px;
+    align-items: center;
+    justify-content: center;
+}
+.btn-lottie svg {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* ===== No-internet overlay ===== */
+.no-internet-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10050;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-primary);
+    padding: 2rem;
+}
+.no-internet-overlay.visible {
+    display: flex;
+}
+.no-internet-content {
+    text-align: center;
+    max-width: 420px;
+}
+.no-internet-lottie {
+    width: min(210px, 55vw);
+    height: auto;
+    /* The animation canvas has empty space at the bottom; pull the text up
+       so it reads as one centered, tightly-spaced group. */
+    margin: 0 auto -1.75rem;
+}
+.no-internet-lottie svg {
+    width: 100% !important;
+    height: auto !important;
+}
+.no-internet-title {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+.no-internet-text {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+.no-internet-retry {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-width: 130px;
+    margin: 0 auto;
 }
 
 .project-card {
@@ -4974,7 +5091,7 @@ section {
     }
 
     .hero-name {
-        font-size: 2.5rem;
+        font-size: clamp(1.75rem, 8vw, 2.5rem);
     }
     
     .blog-container {
@@ -5295,7 +5412,7 @@ section {
     }
 
     .hero-name {
-        font-size: 2.5rem;
+        font-size: clamp(1.75rem, 8vw, 2.5rem);
     }
     
     .blog-container {
@@ -5599,3 +5716,16 @@ section {
     }
 }
 
+
+/* ===== Small phones: tighten oversized typography ===== */
+@media (max-width: 480px) {
+    .greeting-text { font-size: 1rem; }
+    .hero-title { font-size: 1.15rem; }
+    .hero-description { font-size: 0.9rem; }
+    .hero-description-secondary { font-size: 0.88rem; }
+    .section-title { font-size: 1.6rem; }
+    .navbar .logo img { height: 38px !important; }
+    .footer-logo img { height: 38px !important; }
+    .btn { padding: 0.8rem 1.4rem; font-size: 0.9rem; }
+    .hero-buttons { gap: 0.8rem; }
+}

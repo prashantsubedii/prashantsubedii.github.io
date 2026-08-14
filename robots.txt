@@ -1,0 +1,5 @@
+# robots.txt for www.prashantsubedi.info.np
+User-agent: *
+Allow: /
+
+Sitemap: https://www.prashantsubedi.info.np/sitemap.xml

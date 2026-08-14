@@ -589,10 +589,21 @@ async function loadPinnedProjects() {
     }
 }
 
+// Escape untrusted strings before injecting into HTML (defends against XSS
+// from the public fallback APIs that return repo names/descriptions).
+function escapeHtml(value) {
+    return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 function createPinnedProjectCard(repo) {
     const card = document.createElement('div');
     card.className = 'project-card-new';
-    
+
     const repoName = repo.name;
     const repoUrl = repo.url;
     
@@ -628,40 +639,37 @@ function createPinnedProjectCard(repo) {
     if (allTags.length > 0) {
         tagsHTML = `
             <div class="project-tags">
-                ${allTags.map(tag => `<span class="project-tag">${tag}</span>`).join('')}
+                ${allTags.map(tag => `<span class="project-tag">${escapeHtml(tag)}</span>`).join('')}
             </div>
         `;
     }
-    
+
     // Build thumbnail URL from repo's thumbnail.png file
     const defaultBranch = repo.defaultBranch || 'main';
-    const thumbnailUrl = `https://raw.githubusercontent.com/prashantsubedii/${repoName}/${defaultBranch}/thumbnail.png`;
-    const fallbackUrl = repo.openGraphImage || `https://opengraph.githubassets.com/1/prashantsubedii/${repoName}`;
-    
-    console.log(`Project ${repoName} thumbnail URL:`, thumbnailUrl);
-    console.log(`Project ${repoName} fallback URL:`, fallbackUrl);
-    
+    const safeName = encodeURIComponent(repoName);
+    const thumbnailUrl = `https://raw.githubusercontent.com/prashantsubedii/${safeName}/${encodeURIComponent(defaultBranch)}/thumbnail.png`;
+    const fallbackUrl = repo.openGraphImage || `https://opengraph.githubassets.com/1/prashantsubedii/${safeName}`;
+
     const imageHTML = `
-        <img src="${thumbnailUrl}" alt="${repoName}" class="project-card-image" 
-             onload="console.log('Thumbnail loaded for ${repoName}')" 
-             onerror="console.log('Thumbnail failed for ${repoName}, using fallback'); this.onerror=null; this.src='${fallbackUrl}';">
+        <img src="${escapeHtml(thumbnailUrl)}" alt="${escapeHtml(repoName)}" class="project-card-image"
+             onerror="this.onerror=null; this.src='${escapeHtml(fallbackUrl)}';">
         <div class="project-card-image-fallback" style="display: none;"><i class="fab fa-github"></i></div>
     `;
-    
+
     card.innerHTML = `
         <div class="project-card-thumbnail">
             ${imageHTML}
         </div>
         <div class="project-card-body">
-            <h3 class="project-card-title">${repoName}</h3>
-            <p class="project-card-desc">${repo.description || 'No description available.'}</p>
+            <h3 class="project-card-title">${escapeHtml(repoName)}</h3>
+            <p class="project-card-desc">${escapeHtml(repo.description || 'No description available.')}</p>
             ${tagsHTML}
             <div class="project-card-actions">
-                <a href="${repoUrl}" target="_blank" rel="noopener noreferrer" class="project-action-btn primary">
+                <a href="${escapeHtml(repoUrl)}" target="_blank" rel="noopener noreferrer" class="project-action-btn primary">
                     <span>View Source Code</span>
                     <i class="fas fa-arrow-right"></i>
                 </a>
-                <button class="project-action-btn secondary view-readme-btn" data-owner="prashantsubedii" data-repo="${repoName}" data-url="${repoUrl}">
+                <button class="project-action-btn secondary view-readme-btn" data-owner="prashantsubedii" data-repo="${escapeHtml(repoName)}" data-url="${escapeHtml(repoUrl)}">
                     <span>Read Article</span>
                     <i class="fas fa-book-open"></i>
                 </button>
@@ -984,11 +992,22 @@ function initContactForm() {
             return false;
         }
         
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-        }
-        
+        // Show the site's Lottie loader in the button until we get a response.
+        const restoreBtn = (window.SiteLoader && SiteLoader.mountButton)
+            ? SiteLoader.mountButton(submitBtn, 'Sending...')
+            : (function () {
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+                }
+                return function () {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<span>Send Message</span><i class="fas fa-paper-plane"></i>';
+                    }
+                };
+            })();
+
         // Prepare form data
         const formData = new FormData(contactForm);
         
@@ -1009,25 +1028,23 @@ function initContactForm() {
                     
                     // Show success popup
                     showContactPopup('Thank You!', 'Your message has been sent successfully!', 'success');
-                    
+
                     // Reset button
-                    if (submitBtn) {
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = '<span>Send Message</span><i class="fas fa-paper-plane"></i>';
-                    }
+                    restoreBtn();
                 } else {
                     throw new Error('Form submission failed');
                 }
             })
             .catch(error => {
                 console.error('✗ Email send failed:', error);
-                showContactPopup('Send Failed', 'Failed to send message. Please try again.', 'error');
-                
-                // Reset button
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<span>Send Message</span><i class="fas fa-paper-plane"></i>';
+                // If the failure is due to being offline, surface the no-internet state.
+                if (window.SiteLoader && SiteLoader.isOffline && SiteLoader.isOffline()) {
+                    SiteLoader.showNoInternet();
                 }
+                showContactPopup('Send Failed', 'Failed to send message. Please try again.', 'error');
+
+                // Reset button
+                restoreBtn();
             });
         
         return false;
