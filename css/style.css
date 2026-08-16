@@ -608,8 +608,8 @@
 
 .featured-projects-container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
     justify-content: center;
     align-items: stretch;
 }
@@ -633,7 +633,7 @@
     display: flex;
     flex-direction: column;
     position: relative;
-    min-height: 320px;
+    min-height: 0;
     aspect-ratio: 16 / 9;
 }
 
@@ -703,7 +703,7 @@
     left: 0;
     right: 0;
     z-index: 3;
-    padding: 20px;
+    padding: 14px;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -742,20 +742,20 @@
 }
 
 .project-card-title {
-    font-size: 1.4rem;
+    font-size: 1.1rem;
     font-weight: bold;
     color: #ffffff;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.3rem;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8), 0 4px 16px rgba(0, 0, 0, 0.5);
 }
 
 .project-card-desc {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: rgba(255, 255, 255, 0.8);
-    line-height: 1.5;
-    margin-bottom: 0.8rem;
+    line-height: 1.45;
+    margin-bottom: 0.55rem;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7), 0 3px 12px rgba(0, 0, 0, 0.4);
@@ -764,8 +764,10 @@
 .project-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem;
-    margin-bottom: 0.8rem;
+    gap: 0.35rem;
+    margin-bottom: 0.55rem;
+    max-height: 1.6rem;
+    overflow: hidden;
 }
 
 .project-tag {
@@ -790,10 +792,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    padding: 0.6rem 1.2rem;
+    gap: 0.4rem;
+    padding: 0.45rem 0.9rem;
     border-radius: 25px;
-    font-size: 0.8rem;
+    font-size: 0.72rem;
     font-weight: 600;
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -880,10 +882,6 @@
 }
 
 @media (max-width: 1024px) {
-    .featured-projects-container {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
     .blog-container {
         grid-template-columns: repeat(3, 1fr);
     }
@@ -1062,6 +1060,23 @@ html {
     scroll-behavior: smooth;
 }
 
+/* ===== Image save deterrent =====
+   Discourages casual saving (drag-to-save, long-press "Save Image", selection)
+   while leaving the <img src> fully intact so search engines can still crawl
+   and index the photos for Google Search / Images. Not a hard lock: anything
+   visible in a browser can still be captured via screenshot or direct URL. */
+img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+
 body {
     font-family: 'Poppins', sans-serif;
     background: var(--bg-primary);
@@ -1178,10 +1193,12 @@ body::before {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
     box-shadow: 0 4px 15px var(--shadow);
     position: relative;
     overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
 .theme-toggle::before {
@@ -1197,28 +1214,46 @@ body::before {
     transition: width 0.6s ease, height 0.6s ease;
 }
 
-.theme-toggle:hover::before {
-    width: 300px;
-    height: 300px;
-}
-
-.theme-toggle:hover {
-    transform: scale(1.15) rotate(360deg);
-    box-shadow: 0 8px 25px var(--shadow-lg);
-}
-
-.theme-toggle:active {
-    transform: scale(0.95) rotate(360deg);
-}
-
 .theme-toggle i {
     position: relative;
     z-index: 1;
     transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-.theme-toggle:hover i {
-    transform: scale(1.2) rotate(180deg);
+/* Tap/click feedback — works reliably on both touch and mouse */
+.theme-toggle:active {
+    transform: scale(0.92);
+}
+
+/* Full rotation animation, applied briefly via JS on toggle (no sticky state) */
+.theme-toggle.spin {
+    animation: theme-toggle-spin 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes theme-toggle-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* Hover flourishes ONLY on real pointers, so touch taps never get stuck in :hover */
+@media (hover: hover) and (pointer: fine) {
+    .theme-toggle:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .theme-toggle:hover {
+        transform: scale(1.15);
+        box-shadow: 0 8px 25px var(--shadow-lg);
+    }
+
+    .theme-toggle:hover i {
+        transform: scale(1.2) rotate(180deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .theme-toggle.spin { animation: none; }
 }
 
 .hamburger {
@@ -4996,11 +5031,11 @@ section {
     .blog-container-all {
         grid-template-columns: repeat(3, 1fr);
     }
-    
+
     .featured-projects-container {
         padding: 0 0.5rem;
         gap: 1rem;
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
         width: 100%;
         overflow-x: hidden;
         box-sizing: border-box;

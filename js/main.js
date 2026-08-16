@@ -28,31 +28,39 @@ const themeToggle = document.getElementById('themeToggle');
 const body = document.body;
 const currentTheme = localStorage.getItem('theme') || 'dark';
 
-// Set initial theme
-if (currentTheme === 'dark') {
-    body.setAttribute('data-theme', 'dark');
-    if (themeToggle) {
-        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-    }
-} else {
-    body.setAttribute('data-theme', 'light');
-    if (themeToggle) {
-        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-    }
+// Reusable icon element so swapping the theme icon never destroys/recreates
+// the node mid-transition (a cause of the toggle appearing to "freeze").
+const themeIcon = themeToggle ? document.createElement('i') : null;
+if (themeToggle && themeIcon) {
+    themeToggle.innerHTML = '';
+    themeToggle.appendChild(themeIcon);
 }
+
+function applyThemeIcon(theme) {
+    if (!themeIcon) return;
+    themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+}
+
+// Set initial theme
+body.setAttribute('data-theme', currentTheme === 'dark' ? 'dark' : 'light');
+applyThemeIcon(currentTheme === 'dark' ? 'dark' : 'light');
 
 if (themeToggle) {
     themeToggle.addEventListener('click', () => {
-        const currentTheme = body.getAttribute('data-theme');
-        if (currentTheme === 'light') {
-            body.setAttribute('data-theme', 'dark');
-            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-            localStorage.setItem('theme', 'dark');
-        } else {
-            body.setAttribute('data-theme', 'light');
-            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-            localStorage.setItem('theme', 'light');
-        }
+        const nextTheme = body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        body.setAttribute('data-theme', nextTheme);
+        applyThemeIcon(nextTheme);
+        localStorage.setItem('theme', nextTheme);
+
+        // Brief spin for tap/click feedback (no sticky :hover state on touch).
+        themeToggle.classList.remove('spin');
+        // Force reflow so the animation restarts even on rapid taps.
+        void themeToggle.offsetWidth;
+        themeToggle.classList.add('spin');
+    });
+
+    themeToggle.addEventListener('animationend', () => {
+        themeToggle.classList.remove('spin');
     });
 }
 
@@ -95,7 +103,33 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize blog modal
     initBlogModal();
 
+    // Deter casual image saving (keeps images crawlable for search/Images tab)
+    initImageProtection();
+
 });
+
+// ===== Image save deterrent =====
+// Blocks right-click "Save image", drag-to-save, and mobile long-press save
+// on images, without touching the <img src> so search engines still index them.
+function initImageProtection() {
+    document.addEventListener('contextmenu', (e) => {
+        if (e.target && e.target.tagName === 'IMG') {
+            e.preventDefault();
+        }
+    });
+
+    const markImages = () => {
+        document.querySelectorAll('img:not([data-protected])').forEach((img) => {
+            img.setAttribute('draggable', 'false');
+            img.setAttribute('data-protected', '');
+        });
+    };
+    markImages();
+
+    // Images loaded later (e.g. GitHub projects, blog cards) get protected too.
+    const observer = new MutationObserver(markImages);
+    observer.observe(document.body, { childList: true, subtree: true });
+}
 
 function viewAllArticles() {
     const projectsContainer = document.getElementById('projectsContainer');
@@ -449,88 +483,62 @@ async function loadPinnedProjects() {
     
     try {
         let pinnedRepos = null;
-        
-        // Try Netlify function first (uses GitHub GraphQL API with PAT) - with timeout
-        // Only try if NOT on GitHub Pages (check if .netlify exists)
-        const isGitHubPages = !window.location.hostname.includes('netlify');
-        if (!isGitHubPages) {
+
+        // Primary source: assets/pinned.json, committed to the repo and kept in
+        // sync with the GitHub profile's pinned repositories by the scheduled
+        // GitHub Action (.github/workflows/update-pinned.yml). This is the only
+        // reliable way to read live pins on static GitHub Pages — the old
+        // third-party scraper APIs (egoist.dev / *.deno.dev) were shut down when
+        // Deno Deploy Classic was sunset. Cache-busted so Action updates show up.
+        try {
+            const jsonRes = await fetchWithTimeout(`assets/pinned.json?_=${Date.now()}`, { cache: 'no-store' }, 5000);
+            if (jsonRes.ok) {
+                const data = await jsonRes.json();
+                const repos = Array.isArray(data) ? data : data.pinnedRepos;
+                if (repos && repos.length > 0) {
+                    pinnedRepos = repos;
+                    console.log('Loaded pinned repos from assets/pinned.json');
+                }
+            }
+        } catch (e) {
+            console.log('assets/pinned.json unavailable, trying next source...', e.message);
+        }
+
+        // Secondary (Netlify deployments only): live GraphQL via serverless function.
+        if (!pinnedRepos && window.location.hostname.includes('netlify')) {
             try {
                 const response = await fetchWithTimeout('/.netlify/functions/github-pinned', {}, 3000);
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('GitHub Response:', data);
                     if (data.success && data.pinnedRepos && data.pinnedRepos.length > 0) {
                         pinnedRepos = data.pinnedRepos;
-                        console.log('Pinned Repos with Images:', pinnedRepos.map(r => ({ name: r.name, image: r.image })));
                     }
                 }
             } catch (e) {
-                console.log('Netlify function not available, trying fallback...', e.message);
-            }
-        } else {
-            console.log('Detected GitHub Pages deployment, skipping Netlify function');
-        }
-        
-        // Fallback 1: Try egoist API - with timeout
-        if (!pinnedRepos) {
-            try {
-                const fallbackResponse = await fetchWithTimeout(`https://gh-pinned-repos.egoist.dev/?username=${username}`, {}, 5000);
-                if (fallbackResponse.ok) {
-                    const fallbackData = await fallbackResponse.json();
-                    if (fallbackData && fallbackData.length > 0) {
-                        pinnedRepos = fallbackData.map(repo => ({
-                            name: repo.repo,
-                            description: repo.description || 'No description available.',
-                            url: repo.link,
-                            defaultBranch: 'main',
-                            openGraphImage: `https://opengraph.githubassets.com/1/${username}/${repo.repo}`,
-                            stars: repo.stars || 0,
-                            forks: repo.forks || 0,
-                            language: repo.language || null,
-                            languageColor: null,
-                            topics: []
-                        }));
-                        console.log('Successfully loaded pinned repos from egoist API');
-                    }
-                }
-            } catch (e) {
-                console.log('Egoist API failed, trying next fallback...', e.message);
+                console.log('Netlify function not available, using hardcoded fallback...', e.message);
             }
         }
-        
-        // Fallback 2: Try Deno API - with timeout
-        if (!pinnedRepos) {
-            try {
-                const denoResponse = await fetchWithTimeout(`https://gh-pinned-repos-tsj7ta5xfhep.deno.dev/?username=${username}`, {}, 5000);
-                if (denoResponse.ok) {
-                    const denoData = await denoResponse.json();
-                    if (denoData && denoData.length > 0) {
-                        pinnedRepos = denoData.map(repo => ({
-                            name: repo.repo,
-                            description: repo.description || 'No description available.',
-                            url: repo.link,
-                            defaultBranch: 'main',
-                            openGraphImage: `https://opengraph.githubassets.com/1/${username}/${repo.repo}`,
-                            stars: repo.stars || 0,
-                            forks: repo.forks || 0,
-                            language: repo.language || null,
-                            languageColor: null,
-                            topics: []
-                        }));
-                        console.log('Successfully loaded pinned repos from Deno API');
-                    }
-                }
-            } catch (e) {
-                console.log('Deno API failed, using hardcoded fallback...', e.message);
-            }
-        }
-        
-        // Fallback 3: Hardcoded pinned repos (your current 2 pinned repos)
+
+        // Final safety net: hardcoded current pins. Only used if pinned.json is
+        // missing; the Action keeps that file authoritative, so update this list
+        // only if you stop using the Action.
         if (!pinnedRepos) {
             pinnedRepos = [
                 {
+                    name: 'ForestSathi',
+                    description: "ForestSathi (Forest Companion) is an intelligent wildfire risk prediction system that combines satellite data analysis with machine learning to provide real-time, location-specific fire risk assessments across Nepal's diverse terrain.",
+                    url: 'https://github.com/prashantsubedii/ForestSathi',
+                    defaultBranch: 'main',
+                    openGraphImage: 'https://opengraph.githubassets.com/1/prashantsubedii/ForestSathi',
+                    stars: 6,
+                    forks: 0,
+                    language: 'HTML',
+                    languageColor: '#e34c26',
+                    topics: []
+                },
+                {
                     name: 'SkillBazar',
-                    description: 'SkillBazar is a fiverr like freelancing platform based in Nepal',
+                    description: 'SkillBazar is a Fiverr-like freelancing platform based in Nepal.',
                     url: 'https://github.com/prashantsubedii/SkillBazar',
                     defaultBranch: 'main',
                     openGraphImage: 'https://opengraph.githubassets.com/1/prashantsubedii/SkillBazar',
@@ -541,15 +549,15 @@ async function loadPinnedProjects() {
                     topics: []
                 },
                 {
-                    name: 'Basic-Python',
-                    description: 'This repository contains basic Python programs written during my Python learning journey. It includes simple practice codes created in VS Code, starting from zero level concepts such as variables, data types, conditions, loops, and basic functions.',
-                    url: 'https://github.com/prashantsubedii/Basic-Python',
+                    name: 'filesizereducer',
+                    description: 'Image compressing tool.',
+                    url: 'https://github.com/prashantsubedii/filesizereducer',
                     defaultBranch: 'main',
-                    openGraphImage: 'https://opengraph.githubassets.com/1/prashantsubedii/Basic-Python',
+                    openGraphImage: 'https://opengraph.githubassets.com/1/prashantsubedii/filesizereducer',
                     stars: 0,
                     forks: 0,
-                    language: 'Python',
-                    languageColor: '#3572A5',
+                    language: 'HTML',
+                    languageColor: '#e34c26',
                     topics: []
                 }
             ];

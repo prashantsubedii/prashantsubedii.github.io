@@ -88,12 +88,28 @@
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      "name": "Prashant Subedi — Portfolio",
+      "name": "Prashant Subedi",
+      "alternateName": "Prashant Subedi — Portfolio",
       "url": "https://www.prashantsubedi.info.np/",
       "author": {
         "@type": "Person",
         "name": "Prashant Subedi"
       }
+    }
+    </script>
+
+    <!-- ===== Structured Data: Site Navigation (helps Google build sitelinks) ===== -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "itemListElement": [
+        { "@type": "SiteNavigationElement", "position": 1, "name": "About",       "url": "https://www.prashantsubedi.info.np/about.html" },
+        { "@type": "SiteNavigationElement", "position": 2, "name": "Skills",      "url": "https://www.prashantsubedi.info.np/skills.html" },
+        { "@type": "SiteNavigationElement", "position": 3, "name": "Projects",    "url": "https://www.prashantsubedi.info.np/projects.html" },
+        { "@type": "SiteNavigationElement", "position": 4, "name": "Blog",        "url": "https://www.prashantsubedi.info.np/blogs.html" },
+        { "@type": "SiteNavigationElement", "position": 5, "name": "Get in Touch","url": "https://www.prashantsubedi.info.np/contact.html" }
+      ]
     }
     </script>
     <style>
@@ -350,35 +366,41 @@
                     </div>
                     <div class="about-text">
                         <p class="about-paragraph">
-                            I'm a technology enthusiast currently pursuing my <strong>B.Sc. in Computer Science 
-                            and Information Technology</strong>, with a keen interest in AI/ML research. 
-                            My journey in tech began with curiosity and has evolved into a commitment 
-                            to understanding how technology can solve real-world problems.
+                            I'm <strong>Prashant Subedi</strong>, an aspiring <strong>AI/ML engineer and researcher</strong>
+                            currently pursuing my <strong>B.Sc. in Computer Science and Information Technology</strong>.
+                            My focus is on learning the mathematics and engineering behind modern machine learning —
+                            from the fundamentals of statistics and linear algebra to training, evaluating, and deploying
+                            real models that solve meaningful problems.
                         </p>
                         <p class="about-paragraph">
-                            My expertise lies in <strong>frontend development</strong>, where I enjoy crafting intuitive 
-                            and responsive user interfaces. I'm drawn to the creative process of turning 
-                            ideas into functional, beautiful web experiences. Beyond frontend development, I'm 
-                            fascinated by the potential of <strong>AI/ML</strong>, 
-                            exploring how these technologies can revolutionize various industries.
+                            Day to day, I'm deep in <strong>machine learning and deep learning</strong> — working through
+                            supervised and unsupervised methods, neural networks, and the Python data stack
+                            (NumPy, Pandas, scikit-learn, and PyTorch/TensorFlow). I'm especially drawn to
+                            <strong>AI research</strong>: reading papers, reproducing experiments, and building small
+                            projects that turn ideas into working prototypes I can measure and improve.
                         </p>
                         <p class="about-paragraph">
-                            As a software enthusiast, I believe in writing clean, efficient code and staying updated 
-                            with industry trends. Whether it's building web applications or diving into AI 
-                            research, I approach every challenge with enthusiasm and a growth mindset.
+                            I also build for the web, which lets me ship and demo the things I train — I'm comfortable
+                            on the frontend and can wrap a model in a clean, usable interface end to end. Whether it's
+                            a training experiment or a web app, I approach every problem with curiosity, rigor, and a
+                            steady growth mindset.
                         </p>
                         <div class="about-highlights">
                             <div class="highlight-item">
-                                <i class="fas fa-code"></i>
-                                <span>Fullstack Development</span>
-                            </div>
-                            <div class="highlight-item">
                                 <i class="fas fa-brain"></i>
-                                <span>AI Research Enthusiast</span>
+                                <span>Machine Learning</span>
                             </div>
                             <div class="highlight-item">
-                                <i class="fas fa-laptop-code"></i>
-                                <span>AI/ML Engineering</span>
+                                <i class="fas fa-flask"></i>
+                                <span>AI Research</span>
+                            </div>
+                            <div class="highlight-item">
+                                <i class="fas fa-project-diagram"></i>
+                                <span>Deep Learning</span>
+                            </div>
+                            <div class="highlight-item">
+                                <i class="fas fa-code"></i>
+                                <span>Web Development</span>
                             </div>
                         </div>
                     </div>
@@ -478,7 +500,11 @@
                 
                 <!-- Skills Tabs -->
                 <div class="skills-tabs">
-                    <button class="skills-tab-btn active" data-tab="languages">
+                    <button class="skills-tab-btn active" data-tab="aiml">
+                        <i class="fas fa-brain"></i>
+                        AI / ML
+                    </button>
+                    <button class="skills-tab-btn" data-tab="languages">
                         <i class="fas fa-code"></i>
                         Languages
                     </button>
@@ -496,8 +522,84 @@
                     </button> -->
                 </div>
 
+                <!-- AI / ML Tab Content -->
+                <div class="skills-container active" id="aiml-tab">
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fab fa-python"></i>
+                                Python for ML
+                            </span>
+                            <span class="skill-percentage" data-percent="80">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="python-ml" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fas fa-table"></i>
+                                NumPy &amp; Pandas
+                            </span>
+                            <span class="skill-percentage" data-percent="78">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="numpy-pandas" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fas fa-chart-line"></i>
+                                Machine Learning (scikit-learn)
+                            </span>
+                            <span class="skill-percentage" data-percent="72">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="ml" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fas fa-project-diagram"></i>
+                                Deep Learning (PyTorch / TensorFlow)
+                            </span>
+                            <span class="skill-percentage" data-percent="65">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="deep-learning" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fas fa-square-root-variable"></i>
+                                Math for ML (Linear Algebra &amp; Statistics)
+                            </span>
+                            <span class="skill-percentage" data-percent="74">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="math-ml" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">
+                                <i class="fas fa-chart-area"></i>
+                                Data Visualization (Matplotlib)
+                            </span>
+                            <span class="skill-percentage" data-percent="72">0%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-skill="dataviz" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Languages Tab Content -->
-                <div class="skills-container active" id="languages-tab">
+                <div class="skills-container" id="languages-tab">
                     <div class="skill-item">
                         <div class="skill-header">
                             <span class="skill-name">
@@ -925,13 +1027,12 @@
                     <p>&copy; <span id="currentYear">2025</span> Prashant Subedi. All rights reserved.</p>
                 </div>
                 <div class="footer-links">
-                    <a href="#home">Home</a>
-                    <a href="#about">About</a>
-                    <a href="#education">Education</a>
-                    <a href="#skills">Skills</a>
-                    <a href="#featured-projects">Projects</a>
-                    <a href="#blog">Blog</a>
-                    <a href="#contact">Contact</a>
+                    <a href="index.html">Home</a>
+                    <a href="about.html">About</a>
+                    <a href="skills.html">Skills</a>
+                    <a href="projects.html">Projects</a>
+                    <a href="blogs.html">Blog</a>
+                    <a href="contact.html">Get in Touch</a>
                 </div>
             </div>
         </footer>
