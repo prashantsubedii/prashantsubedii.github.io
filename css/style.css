@@ -1745,6 +1745,7 @@ section {
 
 .about-text {
     flex: 1;
+    min-width: 0;
 }
 
 .about-paragraph {
@@ -1756,10 +1757,10 @@ section {
 
 .about-highlights {
     display: flex;
-    gap: 2rem;
+    gap: 1rem;
     margin-top: 2rem;
-    flex-wrap: nowrap;
-    justify-content: center;
+    flex-wrap: wrap;
+    justify-content: flex-start;
     flex-direction: row;
 }
 
@@ -1896,25 +1897,30 @@ section {
 .skills-tabs {
     display: flex;
     justify-content: center;
-    gap: 1rem;
+    gap: 0.6rem;
     margin-bottom: 2.5rem;
-    max-width: 800px;
+    max-width: 640px;
     margin-left: auto;
     margin-right: auto;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 }
 
 .skills-tab-btn {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
-    padding: 0.5rem 1.1rem;
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0.6rem 0.9rem;
     background: var(--bg-secondary);
     color: var(--text-secondary);
-    border: 2px solid var(--border-color);
+    border: 1.5px solid var(--border-color);
     border-radius: 50px;
     font-weight: 600;
     font-size: 0.85rem;
+    line-height: 1.1;
+    white-space: nowrap;
     cursor: pointer;
     transition: var(--transition);
 }
@@ -1932,7 +1938,13 @@ section {
 }
 
 .skills-tab-btn i {
-    font-size: 1.1rem;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.skills-tab-btn span {
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .skills-container {
@@ -4508,6 +4520,11 @@ section {
     transform: rotate(360deg) scale(1.2);
 }
 
+.contact-text {
+    min-width: 0;
+    flex: 1;
+}
+
 .contact-text h4 {
     margin-bottom: 0.25rem;
     color: var(--text-primary);
@@ -4518,6 +4535,8 @@ section {
     color: var(--text-secondary);
     text-decoration: none;
     transition: var(--transition);
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .contact-text a:hover {
@@ -4943,17 +4962,30 @@ section {
     }
 
     .skills-tabs {
-        gap: 0.3rem;
+        gap: 0.4rem;
         margin-bottom: 2rem;
+        max-width: 100%;
     }
 
     .skills-tab-btn {
-        padding: 0.4rem 0.7rem;
-        font-size: 0.75rem;
+        padding: 0.5rem 0.35rem;
+        font-size: 0.72rem;
+        gap: 0.3rem;
     }
 
     .skills-tab-btn i {
-        font-size: 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    /* On the narrowest phones, drop the icon so all tabs stay on one row */
+    @media (max-width: 430px) {
+        .skills-tab-btn i {
+            display: none;
+        }
+        .skills-tab-btn {
+            font-size: 0.7rem;
+            padding: 0.55rem 0.3rem;
+        }
     }
     
     .blog-section {
@@ -5266,17 +5298,30 @@ section {
     }
 
     .skills-tabs {
-        gap: 0.3rem;
+        gap: 0.4rem;
         margin-bottom: 2rem;
+        max-width: 100%;
     }
 
     .skills-tab-btn {
-        padding: 0.4rem 0.7rem;
-        font-size: 0.75rem;
+        padding: 0.5rem 0.35rem;
+        font-size: 0.72rem;
+        gap: 0.3rem;
     }
 
     .skills-tab-btn i {
-        font-size: 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    /* On the narrowest phones, drop the icon so all tabs stay on one row */
+    @media (max-width: 430px) {
+        .skills-tab-btn i {
+            display: none;
+        }
+        .skills-tab-btn {
+            font-size: 0.7rem;
+            padding: 0.55rem 0.3rem;
+        }
     }
     
     .blog-section {
@@ -5587,17 +5632,30 @@ section {
     }
 
     .skills-tabs {
-        gap: 0.3rem;
+        gap: 0.4rem;
         margin-bottom: 2rem;
+        max-width: 100%;
     }
 
     .skills-tab-btn {
-        padding: 0.4rem 0.7rem;
-        font-size: 0.75rem;
+        padding: 0.5rem 0.35rem;
+        font-size: 0.72rem;
+        gap: 0.3rem;
     }
 
     .skills-tab-btn i {
-        font-size: 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    /* On the narrowest phones, drop the icon so all tabs stay on one row */
+    @media (max-width: 430px) {
+        .skills-tab-btn i {
+            display: none;
+        }
+        .skills-tab-btn {
+            font-size: 0.7rem;
+            padding: 0.55rem 0.3rem;
+        }
     }
     
     .blog-section {
