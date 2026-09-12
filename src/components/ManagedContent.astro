@@ -1,0 +1,28 @@
+<script>
+  import '../lib/managed-content';
+</script>
+<style is:global>
+[data-managed-nav][hidden], [data-frames-page][hidden], #certificates[hidden], [data-frames-unavailable][hidden] { display: none !important; }
+.credentials-heading { display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: 1.5rem; }
+.credentials-heading .sec-head { margin-bottom: 0; }
+.slider-controls { display: flex; gap: .5rem; }
+.slider-controls button { width: 42px; height: 42px; border: 1px solid var(--color-border); border-radius: 13px; background: var(--color-surface); color: var(--color-text); font-size: 1.25rem; }
+.credential-slider { display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 2.5rem)/3); gap: 1.25rem; overflow-x: auto; scroll-snap-type: x mandatory; padding: .2rem .1rem 1rem; }
+.credential-card { scroll-snap-align: start; border: 1px solid var(--color-border); border-radius: 22px; background: var(--color-surface); overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
+.credential-cover { height: 200px; display: grid; place-items: center; background: color-mix(in srgb,var(--color-brand) 8%,var(--color-bg)); color: var(--color-brand-400); }
+.credential-cover img { width: 100%; height: 100%; object-fit: contain; padding: .8rem; }
+.credential-cover svg { width: 52px; height: 52px; }
+.credential-body { padding: 1.3rem; display: flex; flex: 1; flex-direction: column; gap: .6rem; }
+.credential-body h3 { font-weight: 750; font-size: 1.1rem; line-height: 1.4; }
+.credential-body p { font-size: .88rem; color: var(--color-muted); line-height: 1.65; }
+.credential-body a { margin-top: auto; padding-top: .8rem; font-size: .9rem; font-weight: 650; color: var(--color-brand-400); }
+.managed-empty { padding: 2rem; border: 1px dashed var(--color-border); border-radius: 20px; color: var(--color-muted); }
+.managed-frames { columns: 3; column-gap: 1.25rem; }
+.managed-frame { break-inside: avoid; margin-bottom: 1.25rem; overflow: hidden; border: 1px solid var(--color-border); border-radius: 20px; background: var(--color-surface); }
+.managed-frame button { display: block; width: 100%; }
+.managed-frame img { width: 100%; height: auto; display: block; transition: transform 250ms ease; }
+.managed-frame button:hover img { transform: scale(1.025); }
+.managed-frame figcaption { padding: 1rem 1.2rem; font-size: .9rem; line-height: 1.6; font-weight: 550; }
+@media(max-width:1000px) { .credential-slider { grid-auto-columns: calc((100% - 1.25rem)/2); } .managed-frames { columns: 2; } }
+@media(max-width:600px) { .credential-slider { grid-auto-columns: 88%; } .managed-frames { columns: 1; } .credentials-heading { align-items: center; } }
+</style>

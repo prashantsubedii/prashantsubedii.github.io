@@ -1,0 +1,145 @@
+---
+import type { SectionMeta, SiteSettings } from '../lib/types';
+import BrandMark from './BrandMark.astro';
+interface Props { sections: SectionMeta[]; settings: SiteSettings; anchorBase?: string; }
+const { sections, settings, anchorBase = '' } = Astro.props;
+// On non-home pages, section anchors must point back to the homepage ('/#about').
+const brandHref = anchorBase ? anchorBase : '#home';
+// Nav is derived from CMS: only visible sections that opted into the nav.
+// Exclude 'about' and 'education' to keep nav clean; 'contact' becomes a button.
+const HIDDEN_FROM_NAV = ['education', 'contact', 'certificates', 'frames'];
+const navItems = sections
+  .filter((s) => s.is_visible && s.in_nav && !HIDDEN_FROM_NAV.includes(s.key))
+  .sort((a, b) => a.sort_order - b.sort_order);
+const contactSection = sections.find((s) => s.key === 'contact' && s.is_visible);
+---
+<header class="site-nav" id="siteNav">
+  <div class="container-page nav-inner">
+    <a href={brandHref} class="brand" aria-label={`${settings.site_name} | home`}>
+      <BrandMark />
+      <span class="brand-name">{settings.site_name}</span>
+    </a>
+
+    <nav class="nav-links" aria-label="Primary">
+      {navItems.map((s) => (
+        <a href={`${anchorBase}#${s.key}`} class="nav-link" data-section={s.key}>{s.label}</a>
+      ))}
+    <a href={`${anchorBase}#certificates`} class="nav-link" data-managed-nav="certificates" hidden>Certificates</a>
+    <a href="/frames" class="nav-link" data-managed-nav="frames" hidden={!!import.meta.env.PUBLIC_SUPABASE_URL}>Frames</a>
+    </nav>
+
+    <div class="nav-actions">
+      {contactSection ? (
+        <a href={`${anchorBase}#contact`} class="nav-contact-btn" data-section="contact">Contact</a>
+      ) : null}
+      <button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle theme">
+        <svg class="i-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42m0-14.14-1.42 1.42M6.35 17.65l-1.42 1.42"/></svg>
+        <svg class="i-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.9 13a9 9 0 0 1-9.9-9.9A9 9 0 1 0 20.9 13Z"/></svg>
+      </button>
+      <button id="navToggle" class="icon-btn nav-burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile-menu" id="mobileMenu" hidden>
+    <nav aria-label="Mobile">
+      <a href="/frames" class="mobile-link" data-managed-nav="frames" hidden={!!import.meta.env.PUBLIC_SUPABASE_URL}>Frames</a>
+      <a href={`${anchorBase}#certificates`} class="mobile-link" data-managed-nav="certificates" hidden>Certificates</a>
+      {navItems.map((s) => (
+        <a href={`${anchorBase}#${s.key}`} class="mobile-link" data-section={s.key}>{s.label}</a>
+      ))}
+      {contactSection ? (
+        <a href={`${anchorBase}#contact`} class="mobile-link" data-section="contact">Contact</a>
+      ) : null}
+    </nav>
+  </div>
+</header>
+
+<style>
+.i-moon { display: none; }
+:global([data-theme="light"]) .i-moon { display: block; }
+:global([data-theme="light"]) .i-sun { display: none; }
+#themeToggle svg { transition: transform 180ms ease; }
+#themeToggle:hover svg { transform: rotate(-12deg); }
+[hidden] { display: none !important; }
+
+.site-nav { position: sticky; top: 0; z-index: 50; background: color-mix(in srgb, var(--color-bg) 88%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--color-border) 78%, transparent); backdrop-filter: blur(18px); }
+.nav-inner { display: flex; align-items: center; justify-content: space-between; min-height: 4.5rem; gap: 1.5rem; }
+.brand { display: inline-flex; align-items: center; gap: .6rem; flex-shrink: 0; }
+.brand-mark { font-size: 1.2rem; font-weight: 700; letter-spacing: -.1em; color: var(--color-brand-400); border-bottom: 2px solid var(--color-brand-400); padding-bottom: 2px; }
+.brand-name { font-size: .88rem; font-weight: 600; }
+.nav-links { display: none; align-items: center; gap: 1.1rem; }
+.nav-link { position: relative; padding-block: 1rem; color: var(--color-muted); font-size: .8rem; white-space: nowrap; }
+.nav-link::after { content: ''; position: absolute; left: 0; right: 0; bottom: .5rem; height: 1px; background: var(--color-brand-400); transform: scaleX(0); transform-origin: left; transition: transform 180ms ease; }
+.nav-link:hover, .nav-link.active { color: var(--color-text); }
+.nav-link:hover::after, .nav-link.active::after { transform: scaleX(1); }
+.nav-actions { display: flex; align-items: center; gap: .5rem; }
+.nav-contact-btn { display: none; align-items: center; padding: .55rem 1rem; font-size: .78rem; font-weight: 600; color: var(--color-text); border: 1px solid var(--color-border); border-radius: 1.5rem; letter-spacing: .01em; transition: border-color 150ms ease, color 150ms ease, background 150ms ease; white-space: nowrap; }
+.nav-contact-btn:hover, .nav-contact-btn.active { border-color: var(--color-border); color: var(--color-bg); background: var(--color-text); }
+.icon-btn { display: grid; place-items: center; width: 2.65rem; height: 2.65rem; color: var(--color-muted); border: 1px solid var(--color-border); border-radius: 50%; background: color-mix(in srgb, var(--color-surface) 55%, transparent); }
+.icon-btn:hover { color: var(--color-text); border-color: var(--color-muted); }
+.mobile-menu { border-top: 1px solid var(--color-border); background: color-mix(in srgb, var(--color-bg) 96%, transparent); max-height: calc(100dvh - 4.5rem); overflow-y: auto; }
+.mobile-menu nav { display: grid; padding: .5rem 1.25rem 1rem; }
+.mobile-link { padding: .85rem .5rem; color: var(--color-muted); border-bottom: 1px solid var(--color-border); font-size: 1rem; }
+.mobile-link.active { color: var(--color-brand-400); }
+@media(min-width: 1100px) { .nav-links { display: flex; } .nav-contact-btn { display: inline-flex; } .nav-burger { display: none; } .mobile-menu { display: none !important; } }
+@media(max-width: 359px) { .brand-name { display: none; } }
+
+.brand-mark { border: 1px solid var(--color-border); padding: 7px 9px; border-radius: 10px; background: var(--color-surface); font-size: 1rem; }
+.nav-inner { min-height: 5rem; }
+.nav-contact-btn { border-radius: 10px; background: var(--color-text); color: var(--color-bg); }
+</style>
+
+<script>
+  // Theme toggle
+  const toggle = document.getElementById('themeToggle');
+  const syncThemeLabel = () => toggle?.setAttribute('aria-label', document.documentElement.dataset.theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
+  syncThemeLabel();
+  toggle?.addEventListener('click', () => {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const next = isLight ? '' : 'light';
+    if (next) document.documentElement.setAttribute('data-theme', 'light');
+    else document.documentElement.removeAttribute('data-theme');
+    try { localStorage.setItem('theme', next || 'dark'); } catch {}
+    syncThemeLabel();
+  });
+  const navInner = document.querySelector('.nav-inner');
+  if (navInner) new ResizeObserver(() => document.documentElement.style.setProperty('--nav-height', `${navInner.getBoundingClientRect().height}px`)).observe(navInner);
+
+  // Disclosure navigation supports Escape, outside clicks, and resize.
+  const burger = document.getElementById('navToggle');
+  const menu = document.getElementById('mobileMenu');
+  function closeMenu(restoreFocus = false) {
+    menu?.setAttribute('hidden', '');
+    burger?.setAttribute('aria-expanded', 'false');
+    burger?.setAttribute('aria-label', 'Open menu');
+    if (restoreFocus) burger?.focus();
+  }
+  burger?.addEventListener('click', () => {
+    if (menu?.hasAttribute('hidden')) {
+      menu.removeAttribute('hidden');
+      burger.setAttribute('aria-expanded', 'true');
+      burger.setAttribute('aria-label', 'Close menu');
+    } else closeMenu();
+  });
+  menu?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => closeMenu()));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menu?.hasAttribute('hidden')) closeMenu(true); });
+  document.addEventListener('click', e => { if (!(e.target as Element).closest('#siteNav')) closeMenu(); });
+  window.matchMedia('(min-width: 1100px)').addEventListener('change', () => closeMenu());
+
+  // Both copies of a section link get the same active state.
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-section]'));
+  const spy = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      for (const link of links) {
+        const active = link.dataset.section === entry.target.id;
+        link.classList.toggle('active', active);
+        if (active) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      }
+    }
+  }, { rootMargin: '-25% 0px -65% 0px' });
+  document.querySelectorAll('section[id]').forEach(s => spy.observe(s));
+</script>

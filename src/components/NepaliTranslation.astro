@@ -1,0 +1,64 @@
+<div class="translation-option" data-no-translate>
+  <div class="language-switch" role="group" aria-label="Reading language">
+    <button type="button" data-language="en" aria-pressed="true">English</button>
+    <button type="button" data-language="ne" aria-pressed="false" lang="ne">नेपाली</button>
+  </div>
+  <span class="translation-status" role="status" aria-live="polite"></span>
+</div>
+<style>
+.translation-option { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: .5rem; }
+.language-switch { display: inline-flex; padding: 3px; border: 1px solid var(--color-border); border-radius: 11px; background: var(--color-surface); }
+button { padding: .4rem .65rem; border-radius: 8px; color: var(--color-muted); font-size: .8rem; font-weight: 650; }
+button[lang=ne] { font-family: var(--font-devanagari); }
+button[aria-pressed=true] { background: var(--color-brand); color: #fff; }
+button:disabled { opacity: .6; }
+.translation-status { font-size: .7rem; color: var(--color-muted); max-width: 25ch; }
+@media(max-width:600px) { .translation-status { flex-basis: 100%; text-align: right; } }
+:global([data-translate-content][lang=ne]) { font-family: var(--font-devanagari); line-height: 1.9; }
+:global([data-translate-content][lang=ne] h1), :global([data-translate-content][lang=ne] h2) { line-height: 1.5; }
+</style>
+<script>
+  import { notify } from '../lib/feedback';
+  import { translateText } from '../lib/translation';
+  const root = document.querySelector<HTMLElement>('[data-translate-content]');
+  const controls = document.querySelector('.translation-option');
+  if (root && controls) {
+    const originals = new Map<Text, string>();
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        return node.textContent?.trim() && /[a-zA-Z]/.test(node.textContent) && !node.parentElement?.closest('script,style,pre,code,[data-no-translate]') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      },
+    });
+    while (walker.nextNode()) originals.set(walker.currentNode as Text, walker.currentNode.textContent!);
+    const status = controls.querySelector('.translation-status')!;
+    let controller: AbortController | undefined;
+    const buttons = controls.querySelectorAll<HTMLButtonElement>('button');
+    function select(language: string) {
+      root!.lang = language;
+      buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.language === language)));
+    }
+    buttons.forEach(button => button.addEventListener('click', async () => {
+      controller?.abort();
+      if (button.dataset.language === 'en') {
+        originals.forEach((text, node) => { node.textContent = text; });
+        select('en'); status.textContent = ''; return;
+      }
+      const active = controller = new AbortController();
+      button.disabled = true;
+      status.textContent = 'Translating…';
+      try {
+        const entries = [...originals];
+        const translated: string[] = [];
+        for (let i = 0; i < entries.length; i += 2) {
+          translated.push(...await Promise.all(entries.slice(i, i + 2).map(([, text]) => translateText(text, active.signal))));
+          if (active.signal.aborted) return;
+          status.textContent = `Translating ${Math.min(i + 2, entries.length)}/${entries.length}`;
+        }
+        entries.forEach(([node], index) => { node.textContent = translated[index]; });
+        select('ne'); status.textContent = 'Automatic translation · MyMemory';
+      } catch {
+        if (!active.signal.aborted) { status.textContent = 'Translation unavailable'; notify('Nepali translation could not load. Please try again later. The English article is still available.', 'err'); }
+      } finally { button.disabled = false; }
+    }));
+  }
+</script>

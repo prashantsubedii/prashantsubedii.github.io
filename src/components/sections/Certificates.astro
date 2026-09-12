@@ -1,0 +1,71 @@
+---
+import type { Certificate } from '../../lib/types';
+import { monthYear } from '../../lib/format';
+import LucideIcon from '../LucideIcon.astro';
+interface Props { items: Certificate[]; }
+const { items } = Astro.props;
+---
+<section class="section bg-dots" id="certificates">
+  <div class="container-page">
+    <div class="sec-head">
+      <p class="kicker">Credentials</p>
+      <h2 class="sec-title">Certificates &amp; Learning</h2>
+    </div>
+
+    {items.length ? (
+      <div class="cert-grid">
+        {items.map((c) => (
+          <article class="cert card-glow reveal">
+            {c.thumbnail_url ? (
+              <div class="cert-thumb"><img src={c.thumbnail_url} alt={c.name} loading="lazy" /></div>
+            ) : null}
+            <div class="cert-body">
+              <div class="cert-head">
+                <span class="cert-ic"><LucideIcon name="award" size={18} /></span>
+                <div class="cert-titles">
+                  <h3 class="cert-name">{c.name}</h3>
+                  {c.issuer ? <p class="cert-issuer">{c.issuer}{c.issue_date ? ` · ${monthYear(c.issue_date)}` : ''}</p> : null}
+                </div>
+              </div>
+              {c.description ? <p class="cert-desc">{c.description}</p> : null}
+              {c.tags.length ? <div class="cert-tags">{c.tags.map((t) => <span class="pill">{t}</span>)}</div> : null}
+              {(c.credential_url || c.file_url) ? (
+                <div class="cert-links">
+                  {c.credential_url ? <a href={c.credential_url} target="_blank" rel="noopener"><LucideIcon name="external-link" size={14} />Verify</a> : null}
+                  {c.file_url ? <a href={c.file_url} target="_blank" rel="noopener"><LucideIcon name="book-open" size={14} />View</a> : null}
+                </div>
+              ) : null}
+            </div>
+          </article>
+        ))}
+      </div>
+    ) : (
+      <div class="cert-empty card">
+        <span class="cert-ic"><LucideIcon name="award" size={20} /></span>
+        <p>Certificates and learning credentials will appear here.</p>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .cert-grid { display: grid; gap: 1.25rem; grid-template-columns: 1fr; }
+  .cert { display: flex; flex-direction: column; overflow: hidden; padding: 0; }
+  .cert-thumb { height: 150px; overflow: hidden; border-bottom: 1px solid var(--color-border); }
+  .cert-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .cert-body { padding: 1.25rem 1.3rem; display: flex; flex-direction: column; gap: 0.7rem; flex: 1; }
+  .cert-head { display: flex; gap: 0.75rem; align-items: flex-start; }
+  .cert-ic { flex: 0 0 auto; display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 0.7rem; color: var(--color-brand-400); background: color-mix(in srgb, var(--color-brand) 14%, transparent); border: 1px solid color-mix(in srgb, var(--color-brand) 24%, var(--color-border)); }
+  .cert-titles { min-width: 0; }
+  .cert-name { font-weight: 700; font-size: 1rem; line-height: 1.3; }
+  .cert-issuer { color: var(--color-brand-400); font-size: 0.85rem; margin-top: 0.15rem; }
+  .cert-desc { color: var(--color-muted); font-size: 0.9rem; line-height: 1.6; flex: 1; }
+  .cert-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .cert-links { display: flex; gap: 1.1rem; padding-top: 0.3rem; }
+  .cert-links a { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.85rem; color: var(--color-brand-400); font-weight: 600; }
+  .cert-links a:hover { text-decoration: underline; }
+  .cert-empty { padding: 1.5rem 0; display: flex; align-items: center; gap: 1rem; color: var(--color-muted); border: 0; border-top: 1px solid var(--color-border); border-radius: 0; background: transparent; font-size: .9rem; }
+  .cert-empty .cert-ic { width: 2.8rem; height: 2.8rem; }
+  @media (min-width: 680px) { .cert-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1040px) { .cert-grid { grid-template-columns: repeat(3, 1fr); } }
+</style>

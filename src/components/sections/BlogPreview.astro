@@ -1,0 +1,90 @@
+---
+import type { MediumPost } from '../../lib/medium';
+import { monthYear } from '../../lib/format';
+import LucideIcon from '../LucideIcon.astro';
+interface Props { posts: MediumPost[]; handle: string; }
+const { posts, handle } = Astro.props;
+const preview = posts.slice(0, 3);
+const profile = `https://medium.com/@${handle}`;
+---
+<section class="section" id="blog">
+  <div class="container-page">
+    <div class="sec-head">
+      <p class="kicker">Writing</p>
+      <h2 class="sec-title">I write on Medium</h2>
+      <p class="sec-lead">Notes on technology, learning, and the occasional thought worth writing down.</p>
+    </div>
+
+    {preview.length ? (
+      <>
+        <div class="writ-grid">
+          {preview.map((p) => (
+            <a class="writ card-glow reveal" href={`/blog/${p.slug}`}>
+              <div class="writ-media">
+                {p.thumbnail
+                  ? <img src={p.thumbnail} alt={p.title} loading="lazy" />
+                  : <div class="writ-ph"><LucideIcon name="book-open" size={26} /></div>}
+              </div>
+              <div class="writ-body">
+                <p class="writ-meta mono">
+                  {p.date ? <span>{monthYear(p.date)}</span> : null}
+                  <span>{p.readingMinutes} min read</span>
+                </p>
+                <h3 class="writ-title">{p.title}</h3>
+                <p class="writ-excerpt">{p.excerpt}</p>
+                {p.tags.length ? <div class="writ-tags">{p.tags.slice(0, 3).map((t) => <span class="tag-brand">#{t}</span>)}</div> : null}
+                <span class="writ-read">Read article <LucideIcon name="arrow-up-right" size={14} /></span>
+              </div>
+            </a>
+          ))}
+        </div>
+        <a class="writ-all" href="/blog">
+          <LucideIcon name="book-open" size={16} />Read all articles<LucideIcon name="arrow-up-right" size={15} />
+        </a>
+      </>
+    ) : (
+      <a class="writ-empty card" href={profile} target="_blank" rel="noopener">
+        <div class="writ-ph sm"><LucideIcon name="book-open" size={20} /></div>
+        <div>
+          <strong>Read my writing on Medium</strong>
+          <p class="mono" style="color:var(--color-muted);font-size:0.85rem;margin-top:0.2rem">@{handle} <LucideIcon name="arrow-up-right" size={12} /></p>
+        </div>
+      </a>
+    )}
+  </div>
+</section>
+
+<style>
+
+.writ-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 3rem; }
+.writ { background: transparent; border: 0; border-top: 1px solid var(--color-border); border-radius: 0; display: grid; grid-template-columns: 110px 1fr; gap: 1.25rem; padding-block: 1.5rem; align-items: start; }
+.writ:first-child { grid-row: span 2; grid-template-columns: 1fr; gap: 1.5rem; padding-top: 0; border-top: 0; }
+.writ-media { aspect-ratio: 1; overflow: hidden; border-radius: 3px; background: var(--color-surface); }
+.writ:first-child .writ-media { aspect-ratio: 1.8; }
+.writ-media img { width: 100%; height: 100%; object-fit: cover; }
+
+.writ-ph { display: grid; place-items: center; width: 100%; height: 100%; color: var(--color-faint); }
+.writ-body { display: flex; flex-direction: column; gap: .7rem; }
+.writ-meta { display: flex; flex-wrap: wrap; gap: .4rem; color: var(--color-faint); font-size: .65rem; }
+.writ-title { font-size: 1.1rem; font-weight: 600; line-height: 1.4; letter-spacing: -.025em; }
+.writ:first-child .writ-title { font-size: 1.7rem; letter-spacing: -.04em; }
+.writ-excerpt { font-size: .85rem; line-height: 1.8; color: var(--color-muted); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.writ-tags { display: flex; flex-wrap: wrap; gap: .3rem; }
+.writ-read { display: flex; gap: .5rem; align-items: center; color: var(--color-brand-400); font-size: .75rem; padding-top: .4rem; }
+.writ-read :global(svg) { transition: transform 180ms ease; }
+.writ:hover .writ-read :global(svg) { transform: translate(3px,-3px); }
+.writ-all { display: inline-flex; align-items: center; gap: .65rem; margin-top: 1.5rem; min-height: 2.75rem; border-bottom: 1px solid var(--color-muted); font-size: .8rem; }
+.writ-all:hover { color: var(--color-brand-400); }
+.writ-empty { display: flex; align-items: center; gap: 1rem; padding: 1.5rem; }
+.writ-ph.sm { width: 3rem; height: 3rem; }
+@media(max-width: 800px) { .writ-grid { grid-template-columns: 1fr; } .writ:first-child { grid-row: auto; } }
+@media(max-width: 400px) { .writ { grid-template-columns: 80px 1fr; gap: 1rem; } }
+
+.writ-grid { gap: 1.25rem; }
+.writ { padding: 1.25rem; border: 1px solid var(--color-border); border-radius: 20px; background: var(--color-surface); box-shadow: none; }
+.writ:first-child { padding: 1.25rem; border: 1px solid var(--color-border); }
+.writ-media { border-radius: 12px; background: var(--color-surface-2); }
+.writ-media img { transition: transform 500ms ease; }
+.writ:hover .writ-media img { transform: scale(1.04); }
+.writ-empty { padding: 2rem; border-radius: 20px; }
+</style>

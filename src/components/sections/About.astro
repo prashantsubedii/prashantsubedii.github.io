@@ -1,0 +1,95 @@
+---
+import type { About } from '../../lib/types';
+import LucideIcon from '../LucideIcon.astro';
+interface Props { about: About; }
+const { about } = Astro.props;
+const paragraphs = about.bio.split(/\n{2,}/).filter(Boolean);
+const preferredHighlights = [
+  { id: 'identity-ai', label: 'Applied AI exploration', icon: 'brain' },
+  { id: 'identity-community', label: 'Tech community building', icon: 'users' },
+  { id: 'identity-research', label: 'Research-driven thinking', icon: 'search' },
+];
+const isLegacyHighlight = (label: string) => /catalyst|aspiring ai\/ml engineer|csitan chitwan|events?\s*&\s*hackathons?/i.test(label);
+const topHighlights = [
+  ...about.highlights.filter((highlight) => !isLegacyHighlight(highlight.label)),
+  ...preferredHighlights,
+].filter((highlight, index, items) => items.findIndex((item) => item.label.toLowerCase() === highlight.label.toLowerCase()) === index).slice(0, 3);
+---
+<section class="section" id="about">
+  <div class="container-page">
+    <div class="sec-head">
+      <p class="kicker">About</p>
+      <h2 class="sec-title">A little about me</h2>
+    </div>
+
+    <div class="about-grid">
+      {about.image_url ? (
+        <div class="about-visual reveal">
+          <div class="photo-frame">
+            <img src={about.image_url} alt={about.heading} loading="lazy" />
+          </div>
+        </div>
+      ) : null}
+
+      <div class="about-text reveal d1">
+        {paragraphs.map((para, i) => <p class={i === 0 ? 'lead-para' : ''}>{para}</p>)}
+
+        {topHighlights.length ? (
+          <div class="quote-block">
+            <span class="quote-mark" aria-hidden="true">"</span>
+            <div class="quote-pills">
+              {topHighlights.map((h) => (
+                <span class="quote-pill">
+                  <span class="pill-ic"><LucideIcon name={h.icon ?? 'sparkles'} size={14} /></span>
+                  <span>{h.label}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {about.stats.length ? <dl class="about-stats">{about.stats.map((s) => <div><dd>{s.value}</dd><dt>{s.label}</dt></div>)}</dl> : null}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+
+.about-grid { display: grid; grid-template-columns: .85fr 1.15fr; gap: clamp(2rem,7vw,6rem); align-items: start; }
+.about-visual { isolation: isolate; position: relative; padding: 0 1rem 1rem 0; }
+.photo-frame { position: relative; aspect-ratio: 4/5; max-width: 340px; overflow: hidden; border-radius: 3px; }
+.photo-frame img { width: 100%; height: 100%; object-fit: cover; }
+.about-visual::after { content: ''; position: absolute; inset: 1.1rem 0 0 1.1rem; max-width: 340px; border: 1px solid var(--color-border); z-index: -1; }
+.about-text { display: flex; flex-direction: column; gap: 1.1rem; }
+.about-text p { font-size: .95rem; line-height: 1.85; color: var(--color-muted); }
+.about-text .lead-para { color: var(--color-text); font-size: 1.15rem; line-height: 1.7; }
+
+/* Quote-pill block */
+.quote-block { position: relative; padding: 1.4rem 1.4rem 1.4rem 1.75rem; border-left: 2px solid var(--color-brand-400); margin-top: .5rem; }
+.quote-mark { position: absolute; top: -.4rem; left: .9rem; font-size: 3.5rem; line-height: 1; color: var(--color-brand-400); opacity: .18; font-family: Georgia, serif; pointer-events: none; }
+.quote-pills { display: flex; flex-wrap: wrap; gap: .6rem; position: relative; }
+.quote-pill { display: inline-flex; align-items: center; gap: .5rem; padding: .45rem .85rem; border: 1px solid var(--color-border); border-radius: 1.5rem; font-size: .78rem; font-weight: 500; color: var(--color-muted); background: var(--color-surface); letter-spacing: .01em; transition: border-color 150ms ease, color 150ms ease; }
+.quote-pill:hover { border-color: var(--color-brand-400); color: var(--color-brand-400); }
+.pill-ic { color: var(--color-brand-400); flex-shrink: 0; }
+
+.about-text .btn { align-self: start; margin-top: .5rem; }
+.about-stats { display: flex; flex-wrap: wrap; gap: 2rem; }
+.about-stats div { display: grid; gap: .2rem; }
+.about-stats dt { color: var(--color-muted); font-size: .75rem; }
+.about-stats dd { font-size: 1.6rem; }
+@media(max-width: 760px) { .about-grid { grid-template-columns: 1fr; } .about-visual { max-width: 300px; } }
+
+.about-grid { grid-template-columns: .9fr 1.3fr; gap: clamp(2rem,5vw,4.5rem); align-items: center; }
+.about-visual { padding: 14px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 24px; transform: rotate(-2deg); }
+.photo-frame { max-width: none; border-radius: 14px; aspect-ratio: 4/4.6; }
+.about-visual::after { display: none; }
+.quote-block { padding: 1.2rem; border: 1px solid var(--color-border); border-radius: 16px; background: var(--color-surface); }
+.quote-mark { display: none; }
+.quote-pill { border: 0; background: var(--color-surface-2); color: var(--color-text); border-radius: 8px; }
+@media(max-width:760px) { .about-grid { grid-template-columns: 1fr; } .about-visual { max-width: 360px; width: 100%; } }
+.quote-block { padding: 0; border: 0; background: transparent; }
+.quote-pills { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .75rem; }
+.quote-pill { display: flex; padding: 1rem; border: 1px solid var(--color-border); }
+@media(max-width:1000px) { .quote-pills { grid-template-columns: 1fr; } }
+</style>

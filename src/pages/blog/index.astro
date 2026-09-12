@@ -1,0 +1,89 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteNav from '../../components/SiteNav.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import NepaliTranslation from '../../components/NepaliTranslation.astro';
+import ReadingBar from '../../components/ReadingBar.astro';
+import LucideIcon from '../../components/LucideIcon.astro';
+import { getSiteSettings, getSocialLinks, getSections } from '../../lib/content';
+import { getMediumPosts, mediumHandleFrom } from '../../lib/medium';
+import { monthYear } from '../../lib/format';
+
+const [settings, socials, sections] = await Promise.all([
+  getSiteSettings(), getSocialLinks(), getSections(),
+]);
+const handle = mediumHandleFrom(socials.find((s) => s.platform === 'medium')?.url) ?? 'prashantsubedii';
+const posts = await getMediumPosts(handle, 24);
+const profile = `https://medium.com/@${handle}`;
+---
+<BaseLayout
+  title={`Writing, ${settings.site_name}`}
+  description={`Articles by ${settings.site_name} on software, AI/ML, and technology communities.`}
+  path="/blog"
+  settings={settings}
+  socials={socials}
+>
+  <SiteNav sections={sections} settings={settings} anchorBase="/" />
+  <ReadingBar href="/" label="Back to home"><NepaliTranslation /></ReadingBar>
+  <main id="main-content" tabindex="-1" class="section" data-translate-content>
+    <div class="container-page">
+      <div class="sec-head" style="margin-top:1rem">
+        <p class="kicker">Writing</p>
+        <h1 class="sec-title">I write on Medium</h1>
+        <p class="sec-lead">Notes on AI, learning and the ideas that bring us together.</p>
+      </div>
+
+      {posts.length ? (
+        <div class="post-list">
+          {posts.map((p) => (
+            <a class="post-row card-glow" href={`/blog/${p.slug}`}>
+              <div class="post-thumb">
+                {p.thumbnail ? <img src={p.thumbnail} alt={p.title} loading="lazy" /> : <div class="ph"><LucideIcon name="book-open" size={22} /></div>}
+              </div>
+              <div class="post-info">
+                <div class="post-meta mono">
+                  {p.date ? <span>{monthYear(p.date)}</span> : null}
+                  <span>{p.readingMinutes} min read</span>
+                </div>
+                <h2 class="post-title">{p.title}</h2>
+                {p.excerpt ? <p class="post-excerpt">{p.excerpt}</p> : null}
+                {p.tags?.length ? <div class="post-tags">{p.tags.slice(0, 4).map((t) => <span class="tag-brand">#{t}</span>)}</div> : null}
+              </div>
+              <span class="post-go"><LucideIcon name="arrow-up-right" size={18} /></span>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <a class="empty card" href={profile} target="_blank" rel="noopener">
+          Couldn't load articles right now. Read them on Medium (@{handle}) <LucideIcon name="arrow-up-right" size={14} />
+        </a>
+      )}
+    </div>
+  </main>
+  <SiteFooter settings={settings} sections={sections} socials={socials} anchorBase="/" />
+</BaseLayout>
+
+<style>
+  .back-link { display: inline-flex; align-items: center; gap: 0.35rem; color: var(--color-muted); font-family: var(--font-mono); font-size: 0.82rem; }
+  .back-link:hover { color: var(--color-brand-400); }
+  .back-link :global(.flip) { transform: rotate(180deg); }
+  .post-list { display: grid; gap: 1rem; }
+  .post-row { display: flex; gap: 1.25rem; padding: 1rem; align-items: center; }
+  .post-thumb { width: 150px; height: 104px; flex: 0 0 auto; border-radius: 0.65rem; overflow: hidden; background: var(--color-surface-2); }
+  .post-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .post-thumb .ph { width: 100%; height: 100%; display: grid; place-items: center; color: var(--color-faint); }
+  .post-info { min-width: 0; flex: 1; }
+  .post-meta { color: var(--color-faint); font-size: 0.76rem; display: flex; gap: 0.4rem; align-items: center; }
+  .post-meta .sep { opacity: 0.6; }
+  .post-title { font-weight: 700; font-size: 1.2rem; margin-top: 0.3rem; letter-spacing: -0.015em; line-height: 1.25; }
+  .post-excerpt { color: var(--color-muted); font-size: 0.92rem; line-height: 1.6; margin-top: 0.45rem; max-width: 62ch; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .post-tags { margin-top: 0.6rem; display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .post-go { flex: 0 0 auto; color: var(--color-faint); align-self: center; }
+  .post-row:hover .post-go { color: var(--color-brand-400); }
+  .empty { display: inline-flex; gap: 0.5rem; align-items: center; margin-top: 1rem; padding: 1.25rem; color: var(--color-muted); }
+  @media (max-width: 640px) {
+    .post-row { flex-wrap: wrap; }
+    .post-thumb { width: 100%; height: 160px; }
+    .post-go { display: none; }
+  }
+</style>

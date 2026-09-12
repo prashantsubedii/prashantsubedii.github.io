@@ -1,0 +1,133 @@
+---
+import type { Project } from '../../lib/types';
+import type { Repo } from '../../lib/github';
+import LucideIcon from '../LucideIcon.astro';
+interface Props { projects: Project[]; repos: Repo[]; }
+const { projects, repos } = Astro.props;
+// Show only featured CMS projects (max 3) OR pinned GitHub repos (max 3)
+// Prefer pinned repos as the main showcase
+const pinnedRepos = repos.slice(0, 3);
+const featured = projects.filter((p) => p.is_featured).slice(0, 3);
+---
+<section class="section" id="featured-projects">
+  <div class="container-page">
+    <div class="sec-head">
+      <p class="kicker">Projects</p>
+      <h2 class="sec-title">Featured Projects</h2>
+      <p class="sec-lead">Exploring machine learning and building practical tools.</p>
+    </div>
+
+    {pinnedRepos.length ? (
+      <div class="proj-grid">
+        {pinnedRepos.map((r) => (
+          <article class="proj reveal">
+            <a class="proj-media" href={`/projects/${r.slug}`} aria-label={`Read about ${r.name}`}>
+              <span class="proj-ph" aria-hidden="true"><LucideIcon name="code" size={32} /></span>
+              {r.openGraphImage ? <img src={r.openGraphImage} alt={`${r.name} preview`} loading="lazy" data-project-image /> : null}
+            </a>
+            <div class="proj-body">
+              <div class="proj-title-row">
+                <h3 class="proj-title">{r.name}</h3>
+                <a class="proj-gh-icon" href={r.url} target="_blank" rel="noopener" aria-label={`GitHub, ${r.name}`}>
+                  <LucideIcon name="github" size={16} />
+                </a>
+              </div>
+              <p class="proj-desc">{r.description}</p>
+              {r.topics?.length ? <div class="proj-tags">{r.topics.slice(0, 4).map((t) => <span class="tag-brand">{t}</span>)}</div> : null}
+              <div class="proj-meta">
+                {r.language ? <span class="repo-lang mono"><LucideIcon name="code" size={14} />{r.language}</span> : null}
+                <span class="repo-stats mono"><LucideIcon name="star" size={12} />{r.stars}</span>
+                <span class="repo-stats mono"><LucideIcon name="git-fork" size={12} />{r.forks}</span>
+              </div>
+              <div class="proj-btns">
+                <a class="rbtn primary" href={`/projects/${r.slug}`}><LucideIcon name="file-text" size={14} />Read more</a>
+                <a class="rbtn ghost" href={r.url} target="_blank" rel="noopener"><LucideIcon name="github" size={14} />GitHub</a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    ) : featured.length ? (
+      <div class="proj-grid">
+        {featured.map((p) => (
+          <article class="proj reveal">
+            <div class="proj-media no-link">
+              {p.image_url
+                ? <img src={p.image_url} alt={p.title} loading="lazy" />
+                : <div class="proj-ph"><LucideIcon name="layout" size={30} /></div>}
+              {p.is_featured ? <span class="feat mono">featured</span> : null}
+            </div>
+            <div class="proj-body">
+              {p.category ? <span class="proj-cat mono">{p.category}</span> : null}
+              <h3 class="proj-title">{p.title}</h3>
+              {p.description ? <p class="proj-desc">{p.description}</p> : null}
+              {p.technologies.length ? <div class="proj-tags">{p.technologies.slice(0, 4).map((t) => <span class="tag-brand">{t}</span>)}</div> : null}
+              <div class="proj-btns">
+                {p.live_url ? <a class="rbtn primary" href={p.live_url} target="_blank" rel="noopener"><LucideIcon name="external-link" size={14} />Live</a> : null}
+                {p.github_url ? <a class="rbtn ghost" href={p.github_url} target="_blank" rel="noopener"><LucideIcon name="github" size={14} />GitHub</a> : null}
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    ) : (
+      <p class="empty mono">// projects will appear here</p>
+    )}
+  </div>
+</section>
+
+<style>
+
+#featured-projects { background: var(--color-surface); }
+.proj-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2.5rem 2rem; }
+.proj { min-width: 0; display: flex; flex-direction: column; }
+.proj-media { display: block; position: relative; aspect-ratio: 1.6; overflow: hidden; background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: 4px; }
+.proj-media.no-link { cursor: default; }
+.proj-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.proj-ph { position: absolute; inset: 0; display: grid; place-items: center; color: var(--color-faint); }
+.feat, .proj-index { position: absolute; bottom: .65rem; left: .65rem; padding: .28rem .45rem; background: var(--color-bg); color: var(--color-text); border: 1px solid var(--color-border); font-size: .6rem; border-radius: 2px; }
+.proj-body { padding-top: 1.25rem; display: flex; flex-direction: column; gap: .7rem; flex: 1; }
+.proj-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: .5rem; }
+.proj-cat { text-transform: uppercase; letter-spacing: .12em; color: var(--color-brand-400); font-size: .63rem; }
+.proj-title { font-size: 1.1rem; font-weight: 600; letter-spacing: -.025em; line-height: 1.35; overflow-wrap: anywhere; flex: 1; }
+.proj-gh-icon { color: var(--color-faint); flex-shrink: 0; padding-top: .1rem; transition: color 150ms ease; }
+.proj-gh-icon:hover { color: var(--color-brand-400); }
+.proj-desc { font-size: .84rem; line-height: 1.8; color: var(--color-muted); }
+.proj-tags { display: flex; flex-wrap: wrap; gap: .35rem; }
+.proj-meta { display: flex; align-items: center; gap: .9rem; }
+.repo-lang { display: flex; align-items: center; gap: .4rem; color: var(--color-faint); font-size: .65rem; }
+.repo-stats { display: flex; align-items: center; gap: .3rem; color: var(--color-faint); font-size: .65rem; }
+.proj-btns { display: flex; gap: .75rem; margin-top: auto; padding-top: .5rem; border-top: 1px solid var(--color-border); }
+.rbtn { display: inline-flex; align-items: center; gap: .45rem; min-height: 2.7rem; font-size: .8rem; font-weight: 700; padding: .5rem 1rem; border-radius: .5rem; border: 1px solid transparent; transition: background 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease; }
+.rbtn:hover { transform: translateY(-2px); }
+.rbtn.primary { background: var(--color-brand); color: #fff; border-color: var(--color-brand); }
+.rbtn.primary:hover { background: var(--color-brand-600); border-color: var(--color-brand-600); }
+.rbtn.ghost { background: transparent; color: var(--color-text); border-color: var(--color-border); }
+.rbtn.ghost:hover { border-color: var(--color-muted); }
+.empty { color: var(--color-muted); }
+@media(max-width: 900px) { .proj-grid { grid-template-columns: 1fr 1fr; } }
+@media(max-width: 580px) { .proj-grid { grid-template-columns: 1fr; } }
+
+#featured-projects { background: linear-gradient(180deg,color-mix(in srgb,var(--color-surface) 50%,var(--color-bg)),var(--color-bg)); }
+.proj-grid { gap: 1.25rem; }
+.proj { padding: 10px; border: 1px solid var(--color-border); border-radius: 22px; background: var(--color-surface); transition: transform 250ms ease,border-color 250ms ease,box-shadow 250ms ease; }
+.proj:hover, .proj:focus-within { transform: translateY(-6px); border-color: color-mix(in srgb,var(--color-brand-400) 55%,var(--color-border)); box-shadow: var(--shadow-lift); }
+.proj-media { border-radius: 14px; border: 0; background: radial-gradient(ellipse at top right,#6881c742,transparent),var(--color-surface-2); }
+.proj-media img { transition: transform 600ms ease; }
+.proj-media:has([data-project-image]) { aspect-ratio: 16/9; background: var(--color-surface-2); }
+.proj-media img[data-project-image] { object-fit: cover; }
+.proj-desc { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.proj:hover .proj-media img { transform: scale(1.045); }
+.proj-index { top: .75rem; bottom: auto; left: .75rem; border-radius: 7px; padding: .35rem .5rem; }
+.proj-body { padding: 1.25rem .75rem .75rem; gap: 1rem; }
+.proj-btns { padding-top: 1rem; }
+.proj-tags .tag-brand { font-size: .6rem; background: var(--color-surface-2); border-color: transparent; }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLImageElement>('[data-project-image]').forEach(img => {
+    const fallback = () => { img.hidden = true; };
+    img.addEventListener('error', fallback, { once: true });
+    if (img.complete && !img.naturalWidth) fallback();
+  });
+</script>

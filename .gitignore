@@ -1,6 +1,7 @@
 # Secrets / environment — never commit
 .env
 .env.*
+!.env.example
 *.local
 secrets.*
 *.pem
@@ -10,6 +11,7 @@ secrets.*
 node_modules/
 dist/
 .cache/
+.astro/
 
 # OS / editor cruft
 .DS_Store

@@ -1,0 +1,97 @@
+---
+import type { Hero, SiteSettings, SocialLink } from '../../lib/types';
+import SocialIcon from '../SocialIcon.astro';
+import LucideIcon from '../LucideIcon.astro';
+interface Props { hero: Hero; socials: SocialLink[]; settings: SiteSettings; }
+const { hero, socials } = Astro.props;
+---
+<section class="section hero" id="home">
+  <div class="container-page hero-grid">
+    <div class="hero-copy">
+      <p class="hero-kicker mono reveal">Building with curiosity &amp; purpose</p>
+      <h1 class="hero-name reveal d1">{hero.headline}<span class="name-period">.</span></h1>
+      <p class="hero-role mono reveal d1">{hero.descriptor}</p>
+      <p class="hero-desc reveal d2">{hero.description}</p>
+
+      {hero.show_availability && hero.availability_text ? <p class="availability mono">{hero.availability_text}</p> : null}
+      <div class="hero-ctas reveal d3">
+        <a class="btn btn-primary download-cv" href="/assets/CV.pdf" download>
+          Download CV
+          <svg class="download-icon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <g class="download-arrow"><path d="M12 3v11m-4-4 4 4 4-4" /></g>
+            <path d="M4 16v4h16v-4" />
+          </svg>
+        </a>
+        {hero.secondary_cta_label && hero.secondary_cta_url ? (
+          <a class="btn btn-ghost" href={hero.secondary_cta_url}>{hero.secondary_cta_label}</a>
+        ) : null}
+      </div>
+
+      {socials.filter(s => ['github', 'linkedin'].includes(s.platform.toLowerCase())).length ? (
+        <div class="hero-find reveal d3">
+          <span class="find-label mono">Find Me On:</span>
+          <div class="find-links">
+            {socials.filter(s => ['github', 'linkedin'].includes(s.platform.toLowerCase())).map((s) => (
+              <a href={s.url} class="find-btn" aria-label={s.label ?? s.platform}
+                 rel={s.url.startsWith('http') ? 'me noopener' : undefined}
+                 target={s.url.startsWith('http') ? '_blank' : undefined}>
+                <SocialIcon platform={s.platform} />
+              </a>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </div>
+
+    {hero.image_url ? (
+      <div class="hero-media reveal d2">
+        <div class="portrait-aura" aria-hidden="true"></div>
+        <figure class="portrait-card" tabindex="0" aria-label={`${hero.headline}, portrait. Focus or hover to see in color.`}>
+          <div class="portrait-top mono"><span>The person behind the work</span><LucideIcon name="sparkles" size={14} /></div>
+          <div class="photo-inner">
+            <img src={hero.image_url} alt={hero.headline} width="380" height="440" fetchpriority="high" />
+          </div>
+        </figure>
+      </div>
+    ) : null}
+  </div>
+</section>
+
+<style>
+
+.hero { position: relative; display: flex; align-items: center; min-height: min(680px, calc(100svh - 4.5rem)); padding-block: 4.5rem 5rem; overflow: clip; isolation: isolate; }
+.hero::after { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(ellipse at 80% 45%, color-mix(in srgb, var(--color-brand) 9%, transparent), transparent 60%); pointer-events: none; }
+.hero-grid { display: grid; grid-template-columns: minmax(0,1.12fr) minmax(0,0.88fr); align-items: center; gap: clamp(2rem,6vw,5rem); }
+.hero-kicker { color: var(--color-brand-400); font-size: .92rem; letter-spacing: 0; font-weight: 650; margin-bottom: 1.75rem; }
+.hero-name { max-width: 8ch; font-size: clamp(3.6rem,6.5vw,6rem); font-family: var(--font-display); font-weight: 700; letter-spacing: -.055em; line-height: .96; text-wrap: balance; }
+.hero-role { margin-top: 1.7rem; max-width: 44ch; font-size: 1.15rem; font-weight: 600; line-height: 1.55; color: var(--color-text); }
+.hero-desc { max-width: 49ch; margin-top: 1rem; font-size: .98rem; line-height: 1.85; color: var(--color-muted); }
+.hero-ctas { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.8rem; }
+.download-cv:hover .download-icon { transform: none; }
+.download-cv:is(:hover,:focus-visible) .download-arrow { animation: download-bounce 1.3s ease-in-out infinite; }
+@keyframes download-bounce { 0%,100% { transform: translateY(0); } 45% { transform: translateY(3px); } 65% { transform: translateY(1px); } 80% { transform: translateY(2px); } }
+.availability { margin-top: 1rem; font-size: .75rem; color: var(--color-brand-400); }
+.hero-find { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: .75rem 1rem; align-items: center; }
+.find-label { color: var(--color-faint); font-size: .88rem; font-weight: 600; }
+.find-links { display: flex; flex-wrap: wrap; gap: .9rem; }
+.find-btn { display: flex; align-items: center; gap: .35rem; width: 44px; height: 44px; justify-content: center; border: 1px solid var(--color-border); border-radius: 12px; color: var(--color-text); }
+.find-btn :global(svg) { width: 21px; height: 21px; }
+.find-btn:hover { color: var(--color-brand-400); }
+.hero-media { position: relative; isolation: isolate; justify-self: center; width: 100%; max-width: 365px; }
+.portrait-aura { position: absolute; z-index: -1; width: 110%; aspect-ratio: 1; left: -5%; top: 9%; border-radius: 22%; background: conic-gradient(from 20deg, #448bff, #9167ef, #4876ee, #5edbea, #448bff); filter: blur(30px); opacity: .55; animation: spin 18s linear infinite; will-change: transform; }
+.portrait-card { padding: 12px; border: 1px solid color-mix(in srgb, var(--color-muted) 32%, transparent); border-radius: 24px; background: color-mix(in srgb, var(--color-surface) 95%, transparent); box-shadow: 0 28px 70px #0005, inset 0 1px 0 #ffffff12; transform: rotate(3deg); transition: transform 450ms ease, box-shadow 450ms ease; }
+.portrait-card:hover, .portrait-card:focus-visible { transform: rotate(0deg) translateY(-5px); box-shadow: 0 35px 80px #0006; }
+.portrait-top { display: flex; justify-content: space-between; align-items: center; padding: 6px 7px 16px; gap: .5rem; color: var(--color-muted); font-size: .78rem; letter-spacing: 0; font-weight: 650; }
+.portrait-top :global(svg) { color: var(--color-brand-400); }
+.photo-inner { position: relative; aspect-ratio: .88; overflow: hidden; border-radius: 14px; background: #deddd9; }
+.photo-inner img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; filter: grayscale(1); transition: filter 650ms ease, transform 800ms ease; }
+.portrait-card:hover .photo-inner img, .portrait-card:focus-visible .photo-inner img { filter: grayscale(0); transform: scale(1.035); }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+
+@media(max-width: 900px) { .hero { min-height: auto; padding-block: 3rem; } .hero-grid { grid-template-columns: minmax(0,1fr) minmax(0,.8fr); gap: 2rem; } .hero-name { font-size: clamp(2.8rem,6.5vw,4.5rem); } .hero-role { font-size: 1rem; } .hero-media { max-width: 300px; } }
+@media(max-width: 700px) { .hero-grid { grid-template-columns: minmax(0,1fr); gap: 2.5rem; } .hero-copy { min-width: 0; } .hero { padding-block: 2.5rem 3rem; } .hero-name { max-width: 100%; font-size: clamp(2.65rem,10.5vw,4rem); line-height: 1.05; } .hero-kicker { font-size: .85rem; margin-bottom: 1.1rem; } .hero-role { font-size: 1.05rem; margin-top: 1.3rem; } .hero-desc { font-size: .96rem; line-height: 1.75; } .hero-media { width: min(100%,320px); padding: 0 8px; } .portrait-card { transform: none; } .hero-ctas { gap: .6rem; } .hero-ctas .btn { flex: 1; padding-inline: .8rem; } .hero-find { margin-top: 1.25rem; } .portrait-top { font-size: .75rem; } }
+.name-period { color: var(--color-brand-400); }
+.hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background-image: linear-gradient(to right,color-mix(in srgb,var(--color-brand-400) 11%,transparent) 1px,transparent 1px),linear-gradient(to bottom,color-mix(in srgb,var(--color-brand-400) 11%,transparent) 1px,transparent 1px); background-size: 64px 64px; mask-image: radial-gradient(ellipse 65% 65% at 0% 45%,#000 8%,transparent 100%); pointer-events: none; }
+.download-cv:hover, .download-cv:focus-visible { transform: none; }
+</style>

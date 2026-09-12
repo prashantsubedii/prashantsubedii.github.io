@@ -1,0 +1,96 @@
+---
+import type { Experience } from '../../lib/types';
+import { dateRange } from '../../lib/format';
+import LucideIcon from '../LucideIcon.astro';
+interface Props { items: Experience[]; }
+const { items } = Astro.props;
+const initials = (name: string) =>
+  name.replace(/[^a-zA-Z ]/g, '').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || 'PS';
+---
+<section class="section" id="experience">
+  <div class="container-page">
+    <div class="sec-head">
+      <p class="kicker">Experience</p>
+      <h2 class="sec-title">Where I've worked &amp; contributed</h2>
+      <p class="sec-lead">Roles across student technology communities and software development.</p>
+    </div>
+
+    <ol class="timeline">
+      {items.map((x) => (
+        <li class="tl-item reveal">
+          <article class="tl-card card-glow">
+            <div class="tl-top">
+              <div class="avatar" style="--sz: 2.9rem">
+                {x.logo_url ? <img src={x.logo_url} alt={x.organization} /> : <span>{initials(x.organization)}</span>}
+              </div>
+              <div class="tl-headings">
+                <h3 class="tl-role">{x.role}</h3>
+                <p class="tl-org">
+                  {x.organization_url
+                    ? <a href={x.organization_url} target="_blank" rel="noopener">{x.organization}<LucideIcon name="external-link" size={12} /></a>
+                    : x.organization}
+                </p>
+              </div>
+              <span class={`tl-date mono ${x.is_current ? 'current' : ''}`}>
+                {x.is_current ? <LucideIcon name="calendar" size={14} /> : null}
+                {dateRange(x.start_date, x.end_date, x.is_current)}
+              </span>
+            </div>
+
+            {[x.employment_type, x.work_mode, x.location].filter(Boolean).length ? (
+              <div class="tl-meta">
+                {[x.employment_type, x.work_mode, x.location].filter(Boolean).map((m) => <span class="pill">{m}</span>)}
+              </div>
+            ) : null}
+
+            {x.description ? <p class="tl-desc">{x.description}</p> : null}
+
+            {x.achievements.length ? (
+              <ul class="tl-ach">
+                {x.achievements.map((a) => (
+                  <li><LucideIcon name="sparkles" size={14} /><span>{a}</span></li>
+                ))}
+              </ul>
+            ) : null}
+
+            {x.technologies.length ? (
+              <div class="tl-tags">{x.technologies.map((t) => <span class="tag-brand">{t}</span>)}</div>
+            ) : null}
+          </article>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+
+.timeline { list-style: none; padding: 0; margin: 0; }
+.tl-item { position: relative; border-top: 1px solid var(--color-border); }
+.tl-card { padding: 2rem 0; border: 0; border-radius: 0; background: transparent; }
+.tl-top { display: flex; gap: 1rem; align-items: flex-start; }
+.tl-headings { flex: 1; min-width: 0; }
+.tl-role { font-size: 1.35rem; letter-spacing: -.03em; font-weight: 600; }
+.tl-org { color: var(--color-brand-400); font-size: .87rem; margin-top: .3rem; }
+.tl-org a { display: inline-flex; gap: .4rem; align-items: center; }
+.tl-org a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.tl-date { display: flex; align-items: center; gap: .5rem; font-size: .7rem; color: var(--color-muted); padding-top: .4rem; }
+.tl-meta, .tl-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1rem; margin-left: 3.9rem; }
+.tl-meta .pill { border: 0; border-radius: 0; padding: 0 .65rem 0 0; }
+.tl-meta .pill + .pill { border-left: 1px solid var(--color-border); padding-left: .65rem; }
+.tl-desc { margin: 1rem 0 0 3.9rem; max-width: 75ch; font-size: .93rem; line-height: 1.8; color: var(--color-muted); }
+.tl-ach { margin: 1rem 0 0 3.9rem; display: grid; gap: .5rem; }
+.tl-ach li { display: flex; gap: .5rem; font-size: .9rem; color: var(--color-muted); }
+.tl-ach :global(svg) { flex-shrink: 0; color: var(--color-brand-400); }
+@media(min-width: 1000px) { #experience > .container-page { display: grid; grid-template-columns: .8fr 1.4fr; gap: 4rem; } .tl-top { flex-wrap: wrap; } .tl-date { width: 100%; margin-left: 3.9rem; } }
+@media(max-width: 600px) { .tl-top { flex-wrap: wrap; } .tl-date { width: 100%; margin-left: 3.9rem; } .tl-desc, .tl-meta, .tl-tags, .tl-ach { margin-left: 0; } }
+
+.timeline { display: grid; gap: 1.2rem; }
+.tl-item { border: 0; }
+.tl-card { padding: 1.8rem; border: 1px solid var(--color-border); border-radius: 20px; background: linear-gradient(130deg,var(--color-surface),color-mix(in srgb,var(--color-surface) 65%,var(--color-bg))); box-shadow: none; }
+.tl-item:first-child .tl-card { border-color: color-mix(in srgb,var(--color-brand-400) 35%,var(--color-border)); }
+.tl-role { font-size: 1.2rem; }
+.tl-top .avatar { border-radius: 12px; background: var(--color-surface-2); }
+@media(min-width:1000px) { #experience > .container-page { grid-template-columns: .75fr 1.4fr; gap: 3rem; } }
+@media(max-width:600px) { .tl-card { padding: 1.35rem; } }
+</style>

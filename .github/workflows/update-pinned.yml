@@ -1,6 +1,6 @@
 name: Update pinned projects
 
-# Keeps assets/pinned.json in sync with the repositories pinned on the GitHub
+# Keeps public/assets/pinned.json in sync with the repositories pinned on the GitHub
 # profile. The site (static GitHub Pages) reads that JSON, so pinning/unpinning
 # a repo on GitHub updates the portfolio automatically — no third-party APIs.
 
@@ -74,20 +74,20 @@ jobs:
               languageColor: (.primaryLanguage.color // null),
               topics: [ .repositoryTopics.nodes[].topic.name ]
             } ]
-          }' > assets/pinned.json
+          }' > public/assets/pinned.json
 
-          echo "Wrote assets/pinned.json:"
-          cat assets/pinned.json
+          echo "Wrote public/assets/pinned.json:"
+          cat public/assets/pinned.json
 
       - name: Commit if changed
         run: |
           set -euo pipefail
-          if git diff --quiet -- assets/pinned.json; then
+          if git diff --quiet -- public/assets/pinned.json; then
             echo "No changes to pinned.json."
             exit 0
           fi
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/pinned.json
+          git add public/assets/pinned.json
           git commit -m "chore: sync pinned projects [skip ci]"
           git push

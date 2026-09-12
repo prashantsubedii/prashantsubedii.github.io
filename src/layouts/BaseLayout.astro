@@ -1,0 +1,154 @@
+---
+import '../styles/global.css';
+import '../styles/responsive.css';
+import SiteFeedback from '../components/SiteFeedback.astro';
+import CustomCursor from '../components/CustomCursor.astro';
+import AnalyticsBeacon from '../components/AnalyticsBeacon.astro';
+import ManagedContent from '../components/ManagedContent.astro';
+import type { SiteSettings, SocialLink } from '../lib/types';
+
+interface Props {
+  title: string;
+  description: string;
+  path?: string;              // e.g. '/', '/blog/my-post'
+  image?: string | null;
+  type?: 'website' | 'article' | 'profile';
+  noindex?: boolean;
+  settings: SiteSettings;
+  socials: SocialLink[];
+  /** Optional extra JSON-LD objects (e.g. BlogPosting). */
+  jsonLd?: Record<string, unknown>[];
+}
+
+const {
+  title, description, path = '/', image, type = 'website',
+  noindex = false, settings, socials, jsonLd = [],
+} = Astro.props;
+
+const origin = settings.canonical_domain.replace(/\/$/, '');
+const canonical = origin + path;
+const ogImage = (image ?? settings.social_image_url ?? '/assets/images/profile.jpg');
+const ogImageAbs = ogImage.startsWith('http') ? ogImage : origin + ogImage;
+
+const sameAs = socials
+  .filter((s) => s.platform !== 'email' && /^https?:/.test(s.url))
+  .map((s) => s.url);
+
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: settings.site_name,
+  url: origin + '/',
+  jobTitle: 'Aspiring AI/ML Engineer, Researcher and Tech Community Builder',
+  description: settings.seo_description,
+  nationality: 'Nepali',
+  ...(settings.contact_location ? {
+    address: { '@type': 'PostalAddress', addressLocality: settings.contact_location, addressCountry: 'Nepal' },
+  } : {}),
+  image: { '@type': 'ImageObject', url: ogImageAbs },
+  ...(sameAs.length ? { sameAs } : {}),
+};
+
+const profilePageLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  url: origin + '/',
+  mainEntity: { '@type': 'Person', name: settings.site_name, url: origin + '/' },
+};
+
+const websiteLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: settings.site_name,
+  url: origin + '/',
+  author: { '@type': 'Person', name: settings.site_name },
+};
+
+const allLd = [personLd, profilePageLd, websiteLd, ...jsonLd];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+    {settings.seo_keywords?.length ? <meta name="keywords" content={settings.seo_keywords.join(', ')} /> : null}
+    <meta name="author" content={settings.site_name} />
+    {noindex
+      ? <meta name="robots" content="noindex, nofollow" />
+      : <meta name="robots" content="index, follow, max-image-preview:large" />}
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#10151c" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={settings.site_name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageAbs} />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    {settings.twitter_handle ? <meta name="twitter:creator" content={settings.twitter_handle} /> : null}
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageAbs} />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/images/favicon-96x96.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;650;700;750;800&family=Space+Grotesk:wght@500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    {allLd.map((obj) => (
+      <script type="application/ld+json" is:inline set:html={JSON.stringify(obj)} />
+    ))}
+
+    <!-- Theme: apply saved preference before paint to avoid flash. -->
+    <script is:inline>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body id="top">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <CustomCursor />
+    <SiteFeedback />
+    <slot />
+    <AnalyticsBeacon />
+    <ManagedContent />
+    <script>
+      let started = false;
+      function revealPage() {
+        if (started) return;
+        started = true;
+        if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        document.documentElement.classList.add('js-motion');
+        document.querySelectorAll<HTMLElement>('.sec-head, .bar-row, .frame-card, .post-row, .contact-intro, .contact-form').forEach(el => el.classList.add('reveal'));
+        const io = new IntersectionObserver(entries => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) { entry.target.classList.add('in'); io.unobserve(entry.target); }
+          }
+        }, { rootMargin: '0px 0px -35px 0px', threshold: .06 });
+        document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+      }
+      if (document.readyState !== 'loading') revealPage();
+      else document.addEventListener('DOMContentLoaded', revealPage, {once: true});
+    </script>
+  </body>
+</html>

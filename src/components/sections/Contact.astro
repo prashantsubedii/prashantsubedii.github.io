@@ -1,0 +1,181 @@
+---
+import type { SiteSettings, SocialLink } from '../../lib/types';
+import SocialIcon from '../SocialIcon.astro';
+import LucideIcon from '../LucideIcon.astro';
+interface Props { settings: SiteSettings; socials: SocialLink[]; }
+const { settings, socials } = Astro.props;
+const email = settings.contact_email;
+---
+<section class="section" id="contact">
+  <div class="container-page">
+    <div class="contact card-glow reveal">
+
+      <div class="contact-grid">
+        <!-- Left: intro + details + socials -->
+        <div class="contact-intro">
+          <p class="kicker">Contact</p>
+          <h2 class="contact-title">Get in touch</h2>
+          <p class="contact-lead">
+            Open to collaboration, community work, internships, and interesting problems.
+            Drop a message and I'll get back to you.
+          </p>
+
+          <ul class="contact-details">
+            {email ? (
+              <li>
+                <span class="cd-ic"><LucideIcon name="mail" size={16} /></span>
+                <a href={`mailto:${email}`}>{email}</a>
+              </li>
+            ) : null}
+            {settings.contact_location ? (
+              <li>
+                <span class="cd-ic"><LucideIcon name="map-pin" size={16} /></span>
+                <span>{settings.contact_location}</span>
+              </li>
+            ) : null}
+          </ul>
+
+          {socials.length ? (
+            <div class="contact-socials">
+              {socials.map((s) => (
+                <a href={s.url} class="social-btn" aria-label={s.label ?? s.platform}
+                   rel={s.url.startsWith('http') ? 'me noopener' : undefined}
+                   target={s.url.startsWith('http') ? '_blank' : undefined}>
+                  <SocialIcon platform={s.platform} />
+                </a>
+              ))}
+            </div>
+          ) : null}
+        </div>
+
+        <!-- Right: the form -->
+        <form class="contact-form" id="contact-form" action="https://formspree.io/f/mregongl" method="POST" novalidate>
+          <div class="cf-row">
+            <div class="cf-field">
+              <label for="cf-name">Name</label>
+              <input id="cf-name" name="name" type="text" autocomplete="name" required placeholder="Your name" />
+            </div>
+            <div class="cf-field">
+              <label for="cf-email">Email</label>
+              <input id="cf-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
+            </div>
+          </div>
+          <div class="cf-field">
+            <label for="cf-subject">Subject</label>
+            <input id="cf-subject" name="subject" type="text" placeholder="What's this about?" />
+          </div>
+          <div class="cf-field">
+            <label for="cf-message">Message</label>
+            <textarea id="cf-message" name="message" rows="5" required placeholder="Tell me a little about it…"></textarea>
+          </div>
+          <button class="btn btn-primary btn-grad" type="submit">
+            <LucideIcon name="arrow-up-right" size={16} /><span class="submit-label">Send message</span>
+          </button>
+          <p class="cf-note">Your message goes directly to my inbox.</p>
+          <p class="cf-status" id="cf-status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+
+.contact { background: transparent; border: 0; border-radius: 0; }
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem,7vw,6rem); }
+.contact-title { font-size: clamp(2.7rem,5.5vw,4.7rem); line-height: 1.1; font-weight: 500; letter-spacing: -.065em; margin-top: 1.5rem; }
+.contact-lead { margin-top: 1.5rem; color: var(--color-muted); font-size: .95rem; line-height: 1.85; max-width: 38ch; }
+.contact-details { display: grid; gap: 1rem; margin-top: 2rem; }
+.contact-details li { display: flex; align-items: center; gap: .75rem; font-size: .85rem; min-width: 0; }
+.contact-details a { overflow-wrap: anywhere; }
+.contact-details a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.cd-ic { color: var(--color-brand-400); flex-shrink: 0; }
+.contact-socials { display: flex; gap: .6rem; margin-top: 1.75rem; }
+.social-btn { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border: 1px solid var(--color-border); border-radius: 50%; color: var(--color-muted); }
+.social-btn:hover { border-color: var(--color-brand-400); color: var(--color-brand-400); }
+/* Form */
+.contact-form { display: grid; gap: 1.1rem; }
+.cf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.cf-field { display: grid; gap: .5rem; }
+.cf-field label { font-size: .71rem; font-weight: 600; color: var(--color-muted); letter-spacing: .04em; text-transform: uppercase; }
+.cf-field input, .cf-field textarea {
+  width: 100%; min-width: 0;
+  padding: .72rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: .3rem;
+  color: var(--color-text);
+  font: inherit;
+  font-size: .9rem;
+  background: var(--color-surface);
+  transition: border-color 150ms ease, background 150ms ease;
+}
+.cf-field input:hover, .cf-field textarea:hover { border-color: var(--color-faint); }
+.cf-field input:focus, .cf-field textarea:focus { border-color: var(--color-brand-400); background: var(--color-surface-2); outline: none; }
+.cf-field input::placeholder, .cf-field textarea::placeholder { color: var(--color-faint); font-size: .85rem; }
+.cf-field textarea { resize: vertical; min-height: 7rem; line-height: 1.7; }
+.cf-field.invalid input, .cf-field.invalid textarea { border-color: #e77676; }
+.contact-form .btn { justify-self: start; margin-top: .35rem; padding: .7rem 1.6rem; }
+.cf-note { font-size: .72rem; color: var(--color-muted); }
+.cf-status { min-height: 1rem; font-size: .8rem; }
+.cf-status.ok { color: var(--color-brand-400); }
+.cf-status.err { color: #e77676; }
+@media(max-width: 850px) { .contact-grid { grid-template-columns: 1fr; gap: 3rem; } }
+@media(max-width: 380px) { .cf-row { grid-template-columns: 1fr; } }
+
+.contact { padding: clamp(1.4rem,4vw,3.5rem); border: 1px solid var(--color-border); border-radius: 28px; background: radial-gradient(ellipse at top left,color-mix(in srgb,var(--color-brand) 13%,transparent),transparent 65%),var(--color-surface); box-shadow: none; }
+.contact:hover { transform: none; }
+.contact-grid { gap: clamp(2rem,4vw,4rem); }
+.contact-title { font-weight: 600; }
+.contact-form { background: var(--color-bg); padding: clamp(1.2rem,2.5vw,2rem); border: 1px solid var(--color-border); border-radius: 20px; }
+.cf-field input, .cf-field textarea { border-radius: 9px; }
+.contact-socials { flex-wrap: wrap; }
+.social-btn { border-radius: 12px; background: var(--color-bg); }
+@media(max-width:500px) { .cf-row { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  import { notify } from '../../lib/feedback';
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  if (form) {
+    const status = document.getElementById('cf-status')!;
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    const label = submit.querySelector('.submit-label')!;
+    let sending = false;
+    const report = (message: string, kind: 'ok' | 'err') => {
+      status.textContent = message;
+      status.className = 'cf-status ' + kind;
+      notify(message, kind);
+    };
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      if (sending) return;
+      const fields = ['name','email','message'].map(n => form.elements.namedItem(n) as HTMLInputElement | HTMLTextAreaElement);
+      fields.forEach(el => { el.closest('.cf-field')?.classList.remove('invalid'); el.removeAttribute('aria-invalid'); });
+      const invalid = fields.filter(el => !el.value.trim() || !el.checkValidity());
+      if (invalid.length) {
+        invalid.forEach(el => { el.closest('.cf-field')?.classList.add('invalid'); el.setAttribute('aria-invalid','true'); });
+        invalid[0].focus(); report('Please enter your name, a valid email and a message.', 'err'); return;
+      }
+      if (!navigator.onLine) { report('You’re offline. Your message is still here; reconnect and try again.', 'err'); return; }
+      sending = true; submit.disabled = true; form.setAttribute('aria-busy','true'); label.textContent = 'Sending…'; status.textContent = '';
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 20000);
+      try {
+        const response = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' }, signal: controller.signal });
+        const data = await response.json().catch(() => null);
+        if (!response.ok) {
+          const message = response.status === 429 ? 'Too many attempts. Please wait a moment and try again.' : data?.errors?.map((item: { message: string }) => item.message).join(' ') || 'Couldn’t send your message. Please try again or email me directly.';
+          report(message, 'err'); return;
+        }
+        if (data?.ok !== true && data?.success !== true && !data?.next) {
+          report('The server did not confirm delivery. Your message is still here; please try again.', 'err'); return;
+        }
+        form.reset(); report('Message sent. Thanks for reaching out!', 'ok');
+      } catch {
+        report(controller.signal.aborted ? 'Sending timed out. Delivery is unconfirmed; check before retrying.' : 'Couldn’t connect. Your message is still here; please try again.', 'err');
+      } finally {
+        clearTimeout(timer); sending = false; submit.disabled = false; form.removeAttribute('aria-busy'); label.textContent = 'Send message';
+      }
+    });
+  }
+</script>

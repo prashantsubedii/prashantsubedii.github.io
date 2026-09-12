@@ -1,0 +1,82 @@
+---
+import type { Education } from '../../lib/types';
+import { dateRange } from '../../lib/format';
+import LucideIcon from '../LucideIcon.astro';
+interface Props { items: Education[]; }
+const { items } = Astro.props;
+---
+<section class="section" id="education">
+  <div class="container-page">
+    <div class="sec-head">
+      <p class="kicker">Education</p>
+      <h2 class="sec-title">Academic background</h2>
+    </div>
+
+    <div class="edu-timeline">
+      {items.map((e) => (
+        <article class="edu-item reveal">
+          <div class="edu-content">
+            <div class="edu-meta">
+              {(e.is_current || e.start_date || e.end_date) ? (
+                <span class={`edu-period mono ${e.is_current ? 'current' : ''}`}>
+                  {e.is_current ? <LucideIcon name="graduation-cap" size={16} /> : null}
+                  {dateRange(e.start_date, e.end_date, e.is_current)}
+                </span>
+              ) : null}
+            </div>
+
+            <h3 class="edu-inst">
+              {e.institution_url
+                ? <a href={e.institution_url} target="_blank" rel="noopener">{e.institution}</a>
+                : e.institution}
+            </h3>
+
+            {(e.program || e.degree) ? (
+              <p class="edu-prog">{e.program ?? e.degree}</p>
+            ) : null}
+
+            {e.description ? <p class="edu-desc">{e.description}</p> : null}
+
+            {e.highlights.length ? (
+              <ul class="edu-hl">
+                {e.highlights.map((h) => (
+                  <li><LucideIcon name="award" size={14} /><span>{h}</span></li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+
+#education { background: var(--color-surface); }
+.edu-timeline { display: grid; gap: 0; max-width: 56rem; }
+.edu-item { display: grid; grid-template-columns: 2rem 1fr; gap: 0 2rem; }
+.edu-content { padding-bottom: 3rem; }
+.edu-item:last-child .edu-content { padding-bottom: 0; }
+.edu-meta { display: flex; flex-wrap: wrap; gap: .35rem 1.25rem; margin-bottom: .85rem; align-items: center; }
+.edu-period { font-size: .67rem; color: var(--color-faint); display: flex; align-items: center; gap: .4rem; }
+.edu-period.current { color: var(--color-brand-400); }
+.edu-loc { display: flex; align-items: center; gap: .3rem; font-size: .65rem; color: var(--color-faint); }
+.edu-inst { font-size: 1.2rem; font-weight: 600; letter-spacing: -.025em; line-height: 1.35; }
+.edu-inst a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.edu-prog { margin-top: .5rem; font-size: .85rem; color: var(--color-brand-400); font-weight: 500; }
+.edu-desc { margin-top: .75rem; font-size: .88rem; line-height: 1.85; color: var(--color-muted); }
+.edu-hl { margin-top: .85rem; display: grid; gap: .4rem; }
+.edu-hl li { display: flex; gap: .75rem; font-size: .85rem; line-height: 1.7; color: var(--color-muted); }
+.hl-dash { color: var(--color-brand-400); flex-shrink: 0; }
+@media(max-width: 640px) { .edu-item { grid-template-columns: 1.5rem 1fr; gap: 0 1.25rem; } .edu-content { padding-bottom: 2.25rem; } }
+
+#education { background: var(--color-bg); }
+.edu-timeline { max-width: none; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+.edu-item { display: block; padding: 2rem; border: 1px solid var(--color-border); border-radius: 20px; background: var(--color-surface); position: relative; overflow: hidden; }
+.edu-item::before { content: ''; position: absolute; width: 80px; height: 80px; right: -28px; top: -28px; border: 16px solid color-mix(in srgb,var(--color-brand-400) 8%,transparent); border-radius: 20px; transform: rotate(25deg); }
+.edu-content { padding-bottom: 0; }
+.edu-meta { margin-bottom: 1.5rem; }
+@media(max-width:640px) { .edu-timeline { grid-template-columns: 1fr; } .edu-item { padding: 1.5rem; } .edu-content { padding-bottom: 0; } }
+.edu-period { padding: .5rem .8rem; border-radius: 9px; background: var(--color-surface-2); font-size: .82rem; font-weight: 600; gap: .5rem; }
+</style>

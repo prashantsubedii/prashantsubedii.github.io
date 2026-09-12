@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteNav from '../components/SiteNav.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import LucideIcon from '../components/LucideIcon.astro';
+import { getSiteSettings, getSocialLinks, getSections } from '../lib/content';
+import { getLocalFrames } from '../lib/frames';
+const [settings, socials, sections] = await Promise.all([getSiteSettings(), getSocialLinks(), getSections()]);
+const frames = getLocalFrames();
+---
+<BaseLayout title={`Frames | ${settings.site_name}`} description="A visual journal of hackathons, shared learning and life in the tech community." path="/frames" settings={settings} socials={socials}>
+  <SiteNav sections={sections} settings={settings} anchorBase="/" />
+  <main id="main-content" tabindex="-1" class="section">
+    <div class="container-page" data-frames-unavailable hidden={!import.meta.env.PUBLIC_SUPABASE_URL}><h1 class="sec-title">Frames</h1><p class="managed-empty">Loading the photo collection…</p><a class="btn btn-ghost" href="/">Back to home</a></div>
+    <div class="container-page" data-frames-page hidden={!!import.meta.env.PUBLIC_SUPABASE_URL}>
+      <div class="sec-head">
+        <p class="kicker"><LucideIcon name="layout" size={18} /> Beyond the screen</p>
+        <h1 class="sec-title">Frames</h1>
+        <p class="sec-lead">The people, places and shared moments behind the work. A visual journal of building, learning and bringing the tech community together.</p>
+      </div>
+      {frames.length ? <div class="frames-grid">{frames.map(f => (
+        <figure class="frame-card">
+          <button class="frame-open" type="button" data-frame-src={f.image_url} data-frame-caption={f.caption ?? 'Community moment'} aria-label={`View ${f.caption ?? 'community photo'}`}>
+            <img src={f.image_url!} alt={f.caption ?? 'Community moment'} loading="lazy" />
+            <span class="frame-expand"><LucideIcon name="external-link" size={18} /></span>
+          </button>
+          {f.caption ? <figcaption>{f.caption}</figcaption> : null}
+        </figure>
+      ))}</div> : <div class="frames-empty card">
+        <LucideIcon name="users" size={32} />
+        <h2>Good moments deserve a frame.</h2>
+        <p>Photos from community events, hackathons and shared learning will appear here soon.</p>
+      </div>}
+      <div class="managed-frames" data-managed-frames></div>
+    </div>
+    <dialog class="frame-viewer" aria-label="Photo viewer">
+      <button class="viewer-close btn btn-ghost" type="button" aria-label="Close photo">Close ×</button>
+      <img class="viewer-image" alt="" />
+      <p class="viewer-caption"></p>
+    </dialog>
+  </main>
+  <SiteFooter settings={settings} sections={sections} socials={socials} anchorBase="/" />
+</BaseLayout>
+<style>
+.frames-grid { columns: 3; column-gap: 1.25rem; }
+.frame-card { break-inside: avoid; margin-bottom: 1.25rem; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 20px; overflow: hidden; }
+.frame-open { display: block; width: 100%; position: relative; overflow: hidden; }
+.frame-open img { display: block; width: 100%; height: auto; transition: transform 400ms ease; }
+.frame-open:hover img { transform: scale(1.03); }
+.frame-expand { position: absolute; right: 12px; bottom: 12px; padding: 10px; border-radius: 10px; color: white; background: #142039d9; }
+.frame-card figcaption { padding: 1rem 1.25rem; font-size: .95rem; font-weight: 600; }
+.frames-empty { padding: clamp(2rem,6vw,5rem); text-align: center; display: grid; justify-items: center; gap: 1rem; }
+.frames-empty :global(svg) { color: var(--color-brand-400); }
+.frames-empty h2 { font-size: 1.5rem; }
+.frames-empty p { color: var(--color-muted); max-width: 42ch; line-height: 1.7; }
+.frame-viewer { margin: auto; padding: 1rem; width: min(94vw,1100px); max-height: 94dvh; border: 1px solid var(--color-border); border-radius: 18px; background: var(--color-bg); color: var(--color-text); }
+.frame-viewer::backdrop { background: #030713dc; backdrop-filter: blur(8px); }
+.viewer-close { display: flex; margin-left: auto; margin-bottom: .75rem; }
+.viewer-image { width: 100%; max-height: 72dvh; object-fit: contain; }
+.viewer-caption { text-align: center; padding: .8rem; }
+@media(max-width:900px) { .frames-grid { columns: 2; } }
+@media(max-width:560px) { .frames-grid { columns: 1; } }
+</style>
+<script>
+const viewer = document.querySelector<HTMLDialogElement>('.frame-viewer');
+const image = viewer?.querySelector<HTMLImageElement>('.viewer-image');
+const caption = viewer?.querySelector('.viewer-caption');
+let previousOverflow = '';
+document.addEventListener('click', event => {
+    const button = (event.target as Element).closest<HTMLButtonElement>('[data-frame-src]');
+    if (!button) return;
+    if (!viewer || !image || !caption) return;
+    image.src = button.dataset.frameSrc!;
+    image.alt = button.dataset.frameCaption!;
+    caption.textContent = image.alt;
+    previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    viewer.showModal();
+});
+viewer?.querySelector('.viewer-close')?.addEventListener('click', () => viewer.close());
+viewer?.addEventListener('close', () => { document.body.style.overflow = previousOverflow; });
+viewer?.addEventListener('click', e => { if (e.target === viewer) viewer.close(); });
+</script>

@@ -1,0 +1,138 @@
+<div id="page-loader" hidden role="status" aria-label="Loading page">
+  <div class="loading-box"><div id="loading-animation" class="loading-animation" aria-hidden="true"></div><p>Loading…</p></div>
+</div>
+<aside id="offline-panel" hidden aria-labelledby="offline-title" role="status">
+  <button class="feedback-close" type="button" aria-label="Dismiss connection notice">×</button>
+  <div id="offline-animation" aria-hidden="true"></div>
+  <h2 id="offline-title">You're offline</h2>
+  <p>You can keep reading this page. Reconnect to send messages or open new pages.</p>
+  <button id="connection-retry" class="btn btn-ghost" type="button">Check connection</button>
+</aside>
+<div id="site-toast" hidden role="status" aria-live="polite" aria-atomic="true">
+  <span class="toast-icon" aria-hidden="true">
+    <svg class="notice-check" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg>
+    <svg class="notice-alert" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v6m0 3v.1"/></svg>
+  </span>
+  <div class="toast-copy"><strong></strong><p></p></div>
+  <button class="feedback-close" type="button" aria-label="Dismiss notification">×</button>
+</div>
+<script>
+  const notify = (message: string, kind: 'ok' | 'err' | 'info' = 'info') => {
+    window.dispatchEvent(new CustomEvent('site:notice', { detail: { message, kind } }));
+  };
+  const loader = document.getElementById('page-loader')!;
+  const offline = document.getElementById('offline-panel')!;
+  const toast = document.getElementById('site-toast')!;
+  let navigationTimer: ReturnType<typeof setTimeout>;
+  window.addEventListener('pageshow', () => { clearTimeout(navigationTimer); loader.hidden = true; });
+  let toastTimer: ReturnType<typeof setTimeout>;
+  window.addEventListener('site:notice', (event) => {
+    const { message, kind } = (event as CustomEvent).detail;
+    toast.querySelector('p')!.textContent = message;
+    toast.querySelector('strong')!.textContent = kind === 'ok' ? (/message.*sent|sent.*message/i.test(message) ? 'Message sent' : 'All done') : kind === 'err' ? 'Please try again' : 'A quick update';
+    toast.dataset.kind = kind;
+    toast.setAttribute('role', kind === 'err' ? 'alert' : 'status');
+    toast.hidden = false;
+    clearTimeout(toastTimer);
+    if (kind !== 'err') toastTimer = setTimeout(() => { toast.hidden = true; }, 7000);
+  });
+  toast.querySelector('button')!.addEventListener('click', () => { toast.hidden = true; });
+  offline.querySelector('.feedback-close')!.addEventListener('click', () => { offline.hidden = true; });
+  const updateConnection = () => { offline.hidden = navigator.onLine; if (!navigator.onLine) loader.hidden = true; };
+  window.addEventListener('offline', updateConnection);
+  window.addEventListener('online', () => { updateConnection(); notify('Connection restored. You’re back online.', 'ok'); });
+  document.getElementById('connection-retry')!.addEventListener('click', () => {
+    updateConnection();
+    if (!navigator.onLine) notify('Still offline. Check your Wi-Fi or mobile connection.', 'err');
+  });
+  updateConnection();
+  document.addEventListener('click', e => {
+    const link = (e.target as Element).closest<HTMLAnchorElement>('a[href]');
+    if (!link || e.defaultPrevented || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button !== 0 || link.target === '_blank' || link.hasAttribute('download')) return;
+    const url = new URL(link.href);
+    if (url.origin !== location.origin || (url.pathname === location.pathname && url.search === location.search) || /\.[a-z0-9]+$/i.test(url.pathname)) return;
+    if (!navigator.onLine) { e.preventDefault(); offline.hidden = false; return; }
+    // Fast navigations need no overlay. Only show feedback when a page takes time.
+    clearTimeout(navigationTimer);
+    navigationTimer = setTimeout(() => { loader.hidden = false; }, 250);
+    setTimeout(() => { loader.hidden = true; }, 3500);
+  });
+  window.addEventListener('unhandledrejection', () => notify('Something could not load. Please refresh or try again.', 'err'));
+  window.addEventListener('error', e => { if (e instanceof ErrorEvent) notify('Something went wrong. Please refresh the page.', 'err'); });
+  // Load the renderer off the critical path; build each SVG only when shown.
+  type Animation = { play(): void; pause(): void; goToAndStop(frame: number, isFrame: boolean): void };
+  type Lottie = { loadAnimation(options: Record<string, unknown>): Animation };
+  let renderer: Promise<Lottie> | undefined;
+  const loadRenderer = () => renderer ??= new Promise<Lottie>((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = '/vendor/lottie.min.js';
+    script.async = true;
+    script.onload = () => resolve((window as unknown as { lottie: Lottie }).lottie);
+    script.onerror = () => { renderer = undefined; script.remove(); reject(new Error('Animation unavailable')); };
+    document.head.append(script);
+  });
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const animations = [
+    ['loading-animation', '/assets/loading.json', loader],
+    ['offline-animation', '/assets/no-internet.json', offline],
+  ] as const;
+  const warmups = animations.map(([id, url, panel]) => {
+    let data: Promise<unknown> | undefined;
+    let animation: Animation | undefined;
+    let initializing = false;
+    const getData = () => data ??= fetch(url).then(response => {
+      if (!response.ok) throw new Error('Animation unavailable');
+      return response.json();
+    }).catch(error => { data = undefined; throw error; });
+    const sync = async () => {
+      if (!animation && !panel.hidden && !initializing) {
+        initializing = true;
+        try {
+          const [lottie, animationData] = await Promise.all([loadRenderer(), getData()]);
+          animation = lottie.loadAnimation({ container: document.getElementById(id), renderer: 'svg', loop: true, autoplay: false, animationData });
+        } catch { /* Text feedback remains usable when an animation cannot load. */ }
+        finally { initializing = false; }
+      }
+      if (!animation) return;
+      if (reduced) animation.goToAndStop(0, true);
+      else if (panel.hidden || document.hidden) animation.pause();
+      else animation.play();
+    };
+    new MutationObserver(() => { void sync(); }).observe(panel, { attributes: true, attributeFilter: ['hidden'] });
+    document.addEventListener('visibilitychange', () => { void sync(); });
+    void sync();
+    return getData;
+  });
+  // Prepare local animation data during idle time so later offline notices can animate.
+  const warm = () => { void Promise.all([loadRenderer(), ...warmups.map(getData => getData())]).catch(() => {}); };
+  const deferWarmup = () => {
+    if ('requestIdleCallback' in window) window.requestIdleCallback(warm, { timeout: 5000 });
+    else setTimeout(warm, 1500);
+  };
+  if (document.readyState === 'complete') deferWarmup();
+  else window.addEventListener('load', deferWarmup, { once: true });
+</script>
+<style>
+[hidden] { display: none !important; }
+#page-loader { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: color-mix(in srgb,var(--color-bg) 94%,transparent); backdrop-filter: blur(10px); }
+.loading-box { text-align: center; font-weight: 600; color: var(--color-text); }
+.loading-animation { width: 150px; height: 150px; }
+#offline-panel { position: fixed; bottom: 22px; right: 22px; width: min(350px,calc(100vw - 32px)); padding: 1.4rem; border-radius: 22px; background: var(--color-surface); border: 1px solid var(--color-border); box-shadow: 0 20px 80px #0005; z-index: 110; }
+#offline-animation { width: 135px; height: 100px; margin: auto; }
+#offline-panel h2 { font-size: 1.25rem; font-weight: 700; margin-top: .5rem; }
+#offline-panel p { font-size: .9rem; line-height: 1.6; color: var(--color-muted); margin-block: .6rem 1rem; }
+.feedback-close { width: 36px; height: 36px; border-radius: 9px; color: var(--color-text); flex-shrink: 0; font-size: 1.4rem; }
+#offline-panel > .feedback-close { position: absolute; top: 8px; right: 8px; }
+#site-toast { display: flex; align-items: center; gap: .8rem; position: fixed; top: 90px; right: 22px; width: min(420px,calc(100vw - 32px)); background: var(--color-surface); border: 1px solid var(--color-border); box-shadow: 0 12px 40px #0004; padding: 1rem; border-radius: 16px; z-index: 120; }
+#site-toast p { font-size: .85rem; line-height: 1.6; color: var(--color-muted); margin-top: .2rem; }
+.toast-copy { flex: 1; }
+.toast-copy strong { font-size: .92rem; font-weight: 700; }
+.toast-icon { flex: 0 0 42px; height: 42px; display: grid; place-items: center; border-radius: 14px; color: var(--color-brand-400); background: color-mix(in srgb,var(--color-brand) 13%,transparent); }
+.notice-check { display: none; }
+#site-toast[data-kind=ok] { border-color: color-mix(in srgb,#32bd84 45%,var(--color-border)); }
+#site-toast[data-kind=ok] .toast-icon { color: #25b67d; background: #25b67d1c; }
+#site-toast[data-kind=ok] .notice-check { display: block; }
+#site-toast[data-kind=ok] .notice-alert { display: none; }
+#site-toast[data-kind=err] { border-color: #bf6877; }
+#site-toast[data-kind=err] .toast-icon { color: #eb8b99; }
+</style>

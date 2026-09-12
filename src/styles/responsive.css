@@ -1,0 +1,73 @@
+/* Public-site typography and intrinsic sizing; CMS styles remain independent. */
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; }
+#main-content { width: 100%; min-width: 0; }
+#main-content :is(h1,h2,h3) { font-family: var(--font-display); font-weight: 700; }
+#main-content :is(.hero-grid,.about-grid,.contact-grid,.proj-grid,.skill-cats,.edu-timeline,.writ-grid) > * { min-width: 0; }
+#main-content .kicker { font-family: var(--font-sans); font-size: .9rem; font-weight: 650; letter-spacing: 0; text-transform: none; }
+#main-content .mono { font-family: var(--font-sans); }
+#main-content :is(.repo-lang,.repo-stats,.writ-meta,.bar-pct,.tl-date,.post-meta) { font-size: .8rem; font-weight: 550; }
+#main-content :is(.post-meta,.writ-meta) { gap: .8rem; flex-wrap: wrap; }
+#main-content :is(.proj-title,.edu-inst,.cat-name) { font-weight: 700; }
+#main-content :is(.bar-name,.tag-brand,.pill) { font-size: .85rem; font-weight: 550; }
+#main-content :is(.prose,.readme) :is(pre,code) { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+#main-content .prose { overflow-wrap: anywhere; }
+#main-content .prose pre { max-width: 100%; }
+.site-nav .nav-inner { gap: 1rem; }
+.site-nav .nav-link { font-weight: 550; }
+.site-nav .nav-link::after { display: none; }
+.site-nav .nav-link.active { color: var(--color-brand-400); }
+.site-footer .footer-legal { font-size: .78rem; }
+@media(max-width: 900px) {
+  #main-content .about-grid { grid-template-columns: minmax(0,1fr); gap: 2rem; }
+  #main-content .about-visual { justify-self: center; width: min(100%,350px); transform: none; }
+  #main-content .about-text { width: 100%; }
+  #main-content .contact-grid { grid-template-columns: minmax(0,1fr); }
+}
+@media(max-width: 700px) {
+  .container-page { width: 100%; padding-inline: 20px; }
+  .section { padding-block: 3rem; }
+  .sec-head { margin-bottom: 1.75rem; gap: .7rem; }
+  .sec-title,.section-title { font-size: clamp(1.85rem,7.5vw,2.4rem); line-height: 1.15; }
+  .site-nav .nav-inner { min-height: 72px; gap: .5rem; }
+  .site-nav .brand { min-width: 0; gap: .5rem; }
+  .site-nav .brand-name { font-size: .85rem; font-weight: 650; }
+  .site-nav .nav-actions { gap: .35rem; flex-shrink: 0; }
+  .site-nav .icon-btn { width: 42px; height: 42px; }
+  #main-content .about-text p { font-size: .98rem; line-height: 1.8; }
+  #main-content .about-text .lead-para { font-size: 1.08rem; }
+  #main-content .quote-block { padding: 0; }
+  #main-content .quote-pills { display: grid; gap: .6rem; }
+  #main-content .quote-pill { border-radius: 9px; font-size: .85rem; white-space: normal; }
+  #main-content .proj-grid, #main-content .skill-cats, #main-content .edu-timeline { grid-template-columns: minmax(0,1fr); }
+  #main-content .proj-body { padding: 1rem .6rem .6rem; }
+  #main-content .proj-desc { font-size: .95rem; line-height: 1.7; }
+  #main-content .proj-btns { flex-wrap: wrap; }
+  #main-content .rbtn { min-height: 44px; white-space: nowrap; }
+  #main-content .skill-cat { padding: 1.25rem; }
+  #main-content .tl-card { padding: 1.25rem; }
+  #main-content .tl-desc, #main-content .tl-meta, #main-content .tl-tags, #main-content .tl-ach { margin-left: 0; }
+  #main-content .tl-top { flex-wrap: wrap; }
+  #main-content .tl-date { margin-left: 0; width: 100%; }
+  #main-content .writ-grid { grid-template-columns: minmax(0,1fr); }
+  #main-content .writ { grid-template-columns: 80px minmax(0,1fr); padding: 1rem; gap: 1rem; }
+  #main-content .writ:first-child { grid-template-columns: minmax(0,1fr); }
+  #main-content .writ:first-child .writ-title { font-size: 1.4rem; }
+  #main-content .writ-tags { overflow-wrap: anywhere; }
+  #main-content .contact { padding: 1.2rem; border-radius: 20px; }
+  #main-content .contact-form { padding: 1.1rem; }
+  #main-content .cf-row { grid-template-columns: minmax(0,1fr); }
+  #main-content .cf-field :is(input,textarea) { font-size: 16px; }
+  #main-content .contact-details li { font-size: .82rem; align-items: flex-start; }
+  #main-content .contact-title { font-size: 2.3rem; }
+  #main-content .post-row { grid-template-columns: minmax(0,1fr); }
+  #main-content .post-go { display: none; }
+}
+@media(max-width: 359px) {
+  .container-page { padding-inline: 16px; }
+  .site-nav .brand-name { display: block; font-size: .75rem; }
+  .site-nav .icon-btn { width: 40px; height: 40px; }
+}
+
+.section { padding-block: clamp(2.75rem,5vw,4rem); }
+.site-nav .nav-contact-btn, .site-nav .nav-contact-btn.active, .site-nav .nav-contact-btn:hover { background: var(--color-text); color: var(--color-bg); border-color: var(--color-border); }

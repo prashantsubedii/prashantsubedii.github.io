@@ -1,0 +1,60 @@
+name: Deploy site (Astro → GitHub Pages)
+
+# Builds the Astro site and publishes it to GitHub Pages. Triggered on pushes to
+# main, on a manual dispatch, and by a repository_dispatch event of type
+# "cms-publish" — the CMS fires that (via a small serverless webhook or the
+# GitHub API) so publishing content rebuilds the static site automatically.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+  repository_dispatch:
+    types: [cms-publish]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment; don't cancel an in-progress publish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run test:security
+      - run: npm run test:content
+      - name: Build
+        env:
+          # Public, client-safe values injected at build time so the static
+          # pages prerender live CMS content. Configure these as repository
+          # *Variables* (Settings → Secrets and variables → Actions → Variables).
+          PUBLIC_SUPABASE_URL: ${{ vars.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_ANON_KEY: ${{ vars.PUBLIC_SUPABASE_ANON_KEY }}
+          PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL }}
+          PUBLIC_ANALYTICS_URL: ${{ vars.PUBLIC_ANALYTICS_URL }}
+        run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

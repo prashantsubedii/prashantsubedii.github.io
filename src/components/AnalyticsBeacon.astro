@@ -1,0 +1,18 @@
+---
+// Fires a single cookieless page-view beacon to the Supabase `track` Edge
+// Function. No-ops unless PUBLIC_ANALYTICS_URL is configured, so local/dev and
+// unconfigured builds send nothing.
+const url = import.meta.env.PUBLIC_ANALYTICS_URL as string | undefined;
+---
+{url ? (
+  <script is:inline define:vars={{ url }}>
+    (function () {
+      try {
+        if (navigator.doNotTrack === '1' || location.pathname.startsWith('/adminprashant')) return;
+        navigator.sendBeacon
+          ? navigator.sendBeacon(url, new Blob([JSON.stringify({ path: location.pathname, referrer: document.referrer })], { type: 'application/json' }))
+          : fetch(url, { method: 'POST', keepalive: true, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ path: location.pathname, referrer: document.referrer }) });
+      } catch (e) {}
+    })();
+  </script>
+) : null}
