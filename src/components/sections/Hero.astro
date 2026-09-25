@@ -63,7 +63,7 @@ const heroSocials = HERO_PLATFORMS.flatMap((p) => socials.filter((s) => s.platfo
 
 <style>
 
-.hero { position: relative; display: flex; align-items: center; min-height: min(680px, calc(100svh - 4.5rem)); padding-block: 4.5rem 5rem; overflow: clip; isolation: isolate; }
+.hero { position: relative; display: flex; align-items: center; min-height: min(680px, calc(100svh - 4.5rem)); padding-block: 4.5rem 3.5rem; overflow: clip; isolation: isolate; }
 .hero::after { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(ellipse at 80% 45%, color-mix(in srgb, var(--color-brand) 9%, transparent), transparent 60%); pointer-events: none; }
 .hero-grid { display: grid; grid-template-columns: minmax(0,1.12fr) minmax(0,0.88fr); align-items: center; gap: clamp(2rem,6vw,5rem); }
 .hero-kicker { color: var(--color-brand-400); font-size: .92rem; letter-spacing: 0; font-weight: 650; margin-bottom: 1.75rem; }

@@ -69,5 +69,5 @@ body { margin: 0; }
   .site-nav .icon-btn { width: 40px; height: 40px; }
 }
 
-.section { padding-block: clamp(2.75rem,5vw,4rem); }
+.section { padding-block: clamp(2.25rem,4vw,3rem); }
 .site-nav .nav-contact-btn, .site-nav .nav-contact-btn.active, .site-nav .nav-contact-btn:hover { background: var(--color-text); color: var(--color-bg); border-color: var(--color-border); }
