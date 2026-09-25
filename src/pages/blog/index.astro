@@ -6,14 +6,15 @@ import NepaliTranslation from '../../components/NepaliTranslation.astro';
 import ReadingBar from '../../components/ReadingBar.astro';
 import LucideIcon from '../../components/LucideIcon.astro';
 import { getSiteSettings, getSocialLinks, getSections } from '../../lib/content';
-import { getMediumPosts, mediumHandleFrom } from '../../lib/medium';
+import { mediumHandleFrom } from '../../lib/medium';
+import { getWritingPosts } from '../../lib/writing';
 import { monthYear } from '../../lib/format';
 
 const [settings, socials, sections] = await Promise.all([
   getSiteSettings(), getSocialLinks(), getSections(),
 ]);
 const handle = mediumHandleFrom(socials.find((s) => s.platform === 'medium')?.url) ?? 'prashantsubedii';
-const posts = await getMediumPosts(handle, 24);
+const posts = await getWritingPosts(handle);
 const profile = `https://medium.com/@${handle}`;
 ---
 <BaseLayout
@@ -29,7 +30,7 @@ const profile = `https://medium.com/@${handle}`;
     <div class="container-page">
       <div class="sec-head" style="margin-top:1rem">
         <p class="kicker">Writing</p>
-        <h1 class="sec-title">I write on Medium</h1>
+        <h1 class="sec-title">Writing & ideas</h1>
         <p class="sec-lead">Notes on AI, learning and the ideas that bring us together.</p>
       </div>
 

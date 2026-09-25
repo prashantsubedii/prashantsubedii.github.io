@@ -2,19 +2,20 @@
 import type { Project } from '../../lib/types';
 import type { Repo } from '../../lib/github';
 import LucideIcon from '../LucideIcon.astro';
-interface Props { projects: Project[]; repos: Repo[]; }
-const { projects, repos } = Astro.props;
+import type { SectionMeta } from '../../lib/types';
+interface Props { section?: SectionMeta; projects: Project[]; repos: Repo[]; }
+const { projects, repos, section } = Astro.props;
 // Show only featured CMS projects (max 3) OR pinned GitHub repos (max 3)
 // Prefer pinned repos as the main showcase
-const pinnedRepos = repos.slice(0, 3);
-const featured = projects.filter((p) => p.is_featured).slice(0, 3);
+const pinnedRepos = section?.show_external === false ? [] : repos.slice(0, 3);
+const featured = projects.filter((p) => p.is_featured);
 ---
 <section class="section" id="featured-projects">
   <div class="container-page">
     <div class="sec-head">
-      <p class="kicker">Projects</p>
-      <h2 class="sec-title">Featured Projects</h2>
-      <p class="sec-lead">Exploring machine learning and building practical tools.</p>
+      <p class="kicker">{section?.eyebrow ?? "Projects"}</p>
+      <h2 class="sec-title">{section?.heading ?? "Featured Projects"}</h2>
+      <p class="sec-lead">{section?.description ?? "Exploring machine learning and building practical tools."}</p>
     </div>
 
     {pinnedRepos.length ? (

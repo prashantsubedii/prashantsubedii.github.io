@@ -1,25 +1,17 @@
 ---
 import type { About } from '../../lib/types';
 import LucideIcon from '../LucideIcon.astro';
-interface Props { about: About; }
-const { about } = Astro.props;
+import type { SectionMeta } from '../../lib/types';
+interface Props { section?: SectionMeta; about: About; }
+const { about, section } = Astro.props;
 const paragraphs = about.bio.split(/\n{2,}/).filter(Boolean);
-const preferredHighlights = [
-  { id: 'identity-ai', label: 'Applied AI exploration', icon: 'brain' },
-  { id: 'identity-community', label: 'Tech community building', icon: 'users' },
-  { id: 'identity-research', label: 'Research-driven thinking', icon: 'search' },
-];
-const isLegacyHighlight = (label: string) => /catalyst|aspiring ai\/ml engineer|csitan chitwan|events?\s*&\s*hackathons?/i.test(label);
-const topHighlights = [
-  ...about.highlights.filter((highlight) => !isLegacyHighlight(highlight.label)),
-  ...preferredHighlights,
-].filter((highlight, index, items) => items.findIndex((item) => item.label.toLowerCase() === highlight.label.toLowerCase()) === index).slice(0, 3);
+const topHighlights = about.highlights;
 ---
 <section class="section" id="about">
   <div class="container-page">
     <div class="sec-head">
-      <p class="kicker">About</p>
-      <h2 class="sec-title">A little about me</h2>
+      <p class="kicker">{section?.eyebrow ?? "About"}</p>
+      <h2 class="sec-title">{section?.heading ?? (about.heading || "A little about me")}</h2>
     </div>
 
     <div class="about-grid">

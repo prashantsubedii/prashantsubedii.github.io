@@ -8,23 +8,25 @@ import Experience from '../components/sections/Experience.astro';
 import Education from '../components/sections/Education.astro';
 import Skills from '../components/sections/Skills.astro';
 import Projects from '../components/sections/Projects.astro';
+import Certificates from '../components/sections/Certificates.astro';
 import BlogPreview from '../components/sections/BlogPreview.astro';
 import Contact from '../components/sections/Contact.astro';
 import { getHomeContent } from '../lib/content';
-import { getMediumPosts, mediumHandleFrom } from '../lib/medium';
+import { mediumHandleFrom } from '../lib/medium';
+import { getWritingPosts } from '../lib/writing';
 import { getPinnedRepos } from '../lib/github';
 
 const c = await getHomeContent();
 
 // Writing: pull recent articles straight from Medium at build time.
 const mediumHandle = mediumHandleFrom(c.socials.find((s) => s.platform === 'medium')?.url) ?? 'prashantsubedii';
-const mediumPosts = await getMediumPosts(mediumHandle, 6);
+const mediumPosts = await getWritingPosts(mediumHandle);
 
 // GitHub pinned repos (kept up to date by .github/workflows/update-pinned.yml).
 const repos = getPinnedRepos();
 
-// Only render sections marked visible, in CMS order.
-const ordered = c.sections.filter((s) => s.is_visible).sort((a, b) => a.sort_order - b.sort_order);
+// Only render sections marked visible, in order.
+const ordered = c.sections.sort((a, b) => a.sort_order - b.sort_order);
 ---
 <BaseLayout
   title={c.settings.seo_title}
@@ -35,29 +37,19 @@ const ordered = c.sections.filter((s) => s.is_visible).sort((a, b) => a.sort_ord
 >
   <SiteNav sections={c.sections} settings={c.settings} />
   <main id="main-content" tabindex="-1">
-    <Hero hero={c.hero} socials={c.socials} settings={c.settings} />
+    
     {ordered.map((s) => {
+      if (!s.is_visible) return null;
       switch (s.key) {
-        case 'about': return <About about={c.about} />;
-        case 'experience': return c.experience.length ? <Experience items={c.experience} /> : null;
-        case 'education': return c.education.length ? <Education items={c.education} /> : null;
-        case 'skills': return <Skills categories={c.skills} />;
-        case 'featured-projects': return <><Projects projects={c.projects} repos={repos} />
-          <section id="certificates" class="section" hidden>
-            <div class="container-page">
-              <div class="credentials-heading">
-                <div class="sec-head"><p class="kicker">Continued learning</p><h2 class="sec-title">Certificates</h2></div>
-                <div class="slider-controls"><button type="button" data-slide="previous" aria-label="Previous certificates">←</button><button type="button" data-slide="next" aria-label="Next certificates">→</button></div>
-              </div>
-              <div class="credential-slider" tabindex="0" role="region" aria-label="Certificates" />
-              <p class="managed-empty" data-cert-empty>Learning milestones will appear here soon.</p>
-              <template id="credential-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="m8 12-1 10 5-3 5 3-1-10M10 8l1.5 1.5L14 7"/></svg></template>
-            </div>
-          </section>
-        </>;
-        case 'certificates': return null; /* hidden — toggle on from admin panel when ready */
-        case 'blog': return <BlogPreview posts={mediumPosts} handle={mediumHandle} />;
-        case 'contact': return <Contact settings={c.settings} socials={c.socials} />;
+        case 'hero': return <Hero section={s} hero={c.hero} socials={c.socials} settings={c.settings} />;
+        case 'about': return <About section={s} about={c.about} />;
+        case 'experience': return c.experience.length ? <Experience section={s} items={c.experience} /> : null;
+        case 'education': return c.education.length ? <Education section={s} items={c.education} /> : null;
+        case 'skills': return <Skills section={s} categories={c.skills} />;
+        case 'featured-projects': return <Projects section={s} projects={c.projects} repos={repos} />;
+        case 'certificates': return c.certificates.length ? <Certificates section={s} items={c.certificates} /> : null;
+        case 'blog': return <BlogPreview section={s} posts={mediumPosts} handle={mediumHandle} />;
+        case 'contact': return <Contact section={s} settings={c.settings} socials={c.socials} />;
         default: return null;
       }
     })}

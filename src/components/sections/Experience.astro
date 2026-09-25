@@ -2,17 +2,18 @@
 import type { Experience } from '../../lib/types';
 import { dateRange } from '../../lib/format';
 import LucideIcon from '../LucideIcon.astro';
-interface Props { items: Experience[]; }
-const { items } = Astro.props;
+import type { SectionMeta } from '../../lib/types';
+interface Props { section?: SectionMeta; items: Experience[]; }
+const { items, section } = Astro.props;
 const initials = (name: string) =>
   name.replace(/[^a-zA-Z ]/g, '').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || 'PS';
 ---
 <section class="section" id="experience">
   <div class="container-page">
     <div class="sec-head">
-      <p class="kicker">Experience</p>
-      <h2 class="sec-title">Where I've worked &amp; contributed</h2>
-      <p class="sec-lead">Roles across student technology communities and software development.</p>
+      <p class="kicker">{section?.eyebrow ?? "Experience"}</p>
+      <h2 class="sec-title">{section?.heading ?? "Where I've worked & contributed"}</h2>
+      <p class="sec-lead">{section?.description ?? "Roles across student technology communities and software development."}</p>
     </div>
 
     <ol class="timeline">

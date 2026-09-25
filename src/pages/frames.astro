@@ -11,8 +11,7 @@ const frames = getLocalFrames();
 <BaseLayout title={`Frames | ${settings.site_name}`} description="A visual journal of hackathons, shared learning and life in the tech community." path="/frames" settings={settings} socials={socials}>
   <SiteNav sections={sections} settings={settings} anchorBase="/" />
   <main id="main-content" tabindex="-1" class="section">
-    <div class="container-page" data-frames-unavailable hidden={!import.meta.env.PUBLIC_SUPABASE_URL}><h1 class="sec-title">Frames</h1><p class="managed-empty">Loading the photo collection…</p><a class="btn btn-ghost" href="/">Back to home</a></div>
-    <div class="container-page" data-frames-page hidden={!!import.meta.env.PUBLIC_SUPABASE_URL}>
+    <div class="container-page">
       <div class="sec-head">
         <p class="kicker"><LucideIcon name="layout" size={18} /> Beyond the screen</p>
         <h1 class="sec-title">Frames</h1>
@@ -31,7 +30,6 @@ const frames = getLocalFrames();
         <h2>Good moments deserve a frame.</h2>
         <p>Photos from community events, hackathons and shared learning will appear here soon.</p>
       </div>}
-      <div class="managed-frames" data-managed-frames></div>
     </div>
     <dialog class="frame-viewer" aria-label="Photo viewer">
       <button class="viewer-close btn btn-ghost" type="button" aria-label="Close photo">Close ×</button>

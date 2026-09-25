@@ -1,17 +1,19 @@
 ---
 import type { SectionMeta, SiteSettings } from '../lib/types';
 import BrandMark from './BrandMark.astro';
+import { getLocalFrames } from '../lib/frames';
 interface Props { sections: SectionMeta[]; settings: SiteSettings; anchorBase?: string; }
 const { sections, settings, anchorBase = '' } = Astro.props;
 // On non-home pages, section anchors must point back to the homepage ('/#about').
 const brandHref = anchorBase ? anchorBase : '#home';
-// Nav is derived from CMS: only visible sections that opted into the nav.
-// Exclude 'about' and 'education' to keep nav clean; 'contact' becomes a button.
-const HIDDEN_FROM_NAV = ['education', 'contact', 'certificates', 'frames'];
+// Nav is derived from src/lib/content.ts: only visible sections that opted into the nav.
+// 'contact' becomes a button.
+const HIDDEN_FROM_NAV = ['contact'];
+const hasFrames = getLocalFrames().length > 0;
 const navItems = sections
   .filter((s) => s.is_visible && s.in_nav && !HIDDEN_FROM_NAV.includes(s.key))
   .sort((a, b) => a.sort_order - b.sort_order);
-const contactSection = sections.find((s) => s.key === 'contact' && s.is_visible);
+const contactSection = sections.find((s) => s.key === 'contact' && s.is_visible && s.in_nav);
 ---
 <header class="site-nav" id="siteNav">
   <div class="container-page nav-inner">
@@ -22,10 +24,9 @@ const contactSection = sections.find((s) => s.key === 'contact' && s.is_visible)
 
     <nav class="nav-links" aria-label="Primary">
       {navItems.map((s) => (
-        <a href={`${anchorBase}#${s.key}`} class="nav-link" data-section={s.key}>{s.label}</a>
+        <a href={`${anchorBase}#${s.key === 'hero' ? 'home' : s.key}`} class="nav-link" data-section={s.key}>{s.label}</a>
       ))}
-    <a href={`${anchorBase}#certificates`} class="nav-link" data-managed-nav="certificates" hidden>Certificates</a>
-    <a href="/frames" class="nav-link" data-managed-nav="frames" hidden={!!import.meta.env.PUBLIC_SUPABASE_URL}>Frames</a>
+    {hasFrames ? <a href="/frames" class="nav-link">Frames</a> : null}
     </nav>
 
     <div class="nav-actions">
@@ -44,11 +45,10 @@ const contactSection = sections.find((s) => s.key === 'contact' && s.is_visible)
 
   <div class="mobile-menu" id="mobileMenu" hidden>
     <nav aria-label="Mobile">
-      <a href="/frames" class="mobile-link" data-managed-nav="frames" hidden={!!import.meta.env.PUBLIC_SUPABASE_URL}>Frames</a>
-      <a href={`${anchorBase}#certificates`} class="mobile-link" data-managed-nav="certificates" hidden>Certificates</a>
       {navItems.map((s) => (
         <a href={`${anchorBase}#${s.key}`} class="mobile-link" data-section={s.key}>{s.label}</a>
       ))}
+      {hasFrames ? <a href="/frames" class="mobile-link">Frames</a> : null}
       {contactSection ? (
         <a href={`${anchorBase}#contact`} class="mobile-link" data-section="contact">Contact</a>
       ) : null}

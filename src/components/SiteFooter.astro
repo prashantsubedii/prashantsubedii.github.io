@@ -4,9 +4,11 @@ import SocialIcon from './SocialIcon.astro';
 
 import FooterArt from './FooterArt.astro';
 import BrandMark from './BrandMark.astro';
+import { getLocalFrames } from '../lib/frames';
 interface Props { settings: SiteSettings; sections: SectionMeta[]; socials: SocialLink[]; anchorBase?: string; }
 const { settings, sections, socials, anchorBase = '' } = Astro.props;
-const navItems = sections.filter((s) => s.is_visible && s.in_nav && !['certificates', 'blog', 'frames'].includes(s.key)).sort((a, b) => a.sort_order - b.sort_order);
+const navItems = sections.filter((s) => s.is_visible && s.in_nav && s.key !== 'blog').sort((a, b) => a.sort_order - b.sort_order);
+const hasFrames = getLocalFrames().length > 0;
 const year = new Date().getFullYear();
 const copyright = settings.footer_copyright ?? `© ${year} ${settings.site_name}`;
 const role = 'Aspiring AI/ML Engineer';
@@ -24,8 +26,7 @@ const role = 'Aspiring AI/ML Engineer';
     <nav class="footer-nav" aria-label="Footer">
       {navItems.slice(0, 6).map((s) => <a href={`${anchorBase}#${s.key}`}>{s.label}</a>)}
       <a href="/blog">Writing</a>
-      <a href="/frames" data-managed-nav="frames" hidden={!!import.meta.env.PUBLIC_SUPABASE_URL}>Frames</a>
-      <a href={`${anchorBase}#certificates`} data-managed-nav="certificates" hidden>Certificates</a>
+      {hasFrames ? <a href="/frames">Frames</a> : null}
     </nav>
 
     <div class="footer-social">

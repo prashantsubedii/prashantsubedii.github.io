@@ -2,8 +2,6 @@
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
     "types": ["astro/client", "node"],
-    "jsx": "react-jsx",
-    "jsxImportSource": "react",
     "paths": {
       "@/*": ["./src/*"],
       "@lib/*": ["./src/lib/*"],
@@ -12,5 +10,5 @@
     "verbatimModuleSyntax": true
   },
   "include": ["src"],
-  "exclude": ["dist", "legacy", "node_modules", "supabase"]
+  "exclude": ["dist", "legacy", "node_modules"]
 }

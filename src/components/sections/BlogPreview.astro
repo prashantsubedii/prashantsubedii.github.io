@@ -2,17 +2,18 @@
 import type { MediumPost } from '../../lib/medium';
 import { monthYear } from '../../lib/format';
 import LucideIcon from '../LucideIcon.astro';
-interface Props { posts: MediumPost[]; handle: string; }
-const { posts, handle } = Astro.props;
+import type { SectionMeta } from '../../lib/types';
+interface Props { section?: SectionMeta; posts: MediumPost[]; handle: string; }
+const { posts, handle, section } = Astro.props;
 const preview = posts.slice(0, 3);
 const profile = `https://medium.com/@${handle}`;
 ---
 <section class="section" id="blog">
   <div class="container-page">
     <div class="sec-head">
-      <p class="kicker">Writing</p>
-      <h2 class="sec-title">I write on Medium</h2>
-      <p class="sec-lead">Notes on technology, learning, and the occasional thought worth writing down.</p>
+      <p class="kicker">{section?.eyebrow ?? "Writing"}</p>
+      <h2 class="sec-title">{section?.heading ?? "Writing & ideas"}</h2>
+      <p class="sec-lead">{section?.description ?? "Notes on technology, learning, and the occasional thought worth writing down."}</p>
     </div>
 
     {preview.length ? (

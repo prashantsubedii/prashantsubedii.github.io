@@ -1,6 +1,4 @@
-// Domain types shared by the public site and the admin CMS.
-// These mirror supabase/schema.sql. Media references are resolved to URLs by
-// the content layer before reaching components.
+// Content types for the portfolio. The data itself lives in src/lib/content.ts.
 
 export interface SiteSettings {
   site_name: string;
@@ -15,7 +13,6 @@ export interface SiteSettings {
   contact_location: string | null;
   footer_tagline: string | null;
   footer_copyright: string | null;
-  analytics_enabled: boolean;
 }
 
 export interface Hero {
@@ -43,6 +40,7 @@ export interface About {
 }
 
 export interface SectionMeta {
+  heading?: string | null; eyebrow?: string | null; description?: string | null; body?: string | null; show_external?: boolean;
   key: string;
   label: string;
   is_visible: boolean;
@@ -132,23 +130,6 @@ export interface Certificate {
   sort_order: number;
 }
 
-export interface BlogPost {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string | null;
-  body: string;
-  cover_url: string | null;
-  tags: string[];
-  status: 'draft' | 'published' | 'archived';
-  published_at: string | null;
-  reading_minutes: number | null;
-  seo_title: string | null;
-  seo_description: string | null;
-  seo_image_url: string | null;
-  is_indexable: boolean;
-}
-
 export interface SocialLink {
   id: string;
   platform: string;
@@ -157,14 +138,4 @@ export interface SocialLink {
   icon: string | null;
   sort_order: number;
 }
-
-/** A tech-related photo shown on the /snapshots page. */
-export interface Snapshot {
-  id: string;
-  image_url: string | null;
-  caption: string | null;
-  location: string | null;
-  taken_on: string | null;
-  tags: string[];
-  sort_order: number;
-}
+

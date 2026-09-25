@@ -3,8 +3,6 @@ import '../styles/global.css';
 import '../styles/responsive.css';
 import SiteFeedback from '../components/SiteFeedback.astro';
 import CustomCursor from '../components/CustomCursor.astro';
-import AnalyticsBeacon from '../components/AnalyticsBeacon.astro';
-import ManagedContent from '../components/ManagedContent.astro';
 import type { SiteSettings, SocialLink } from '../lib/types';
 
 interface Props {
@@ -130,8 +128,6 @@ const allLd = [personLd, profilePageLd, websiteLd, ...jsonLd];
     <CustomCursor />
     <SiteFeedback />
     <slot />
-    <AnalyticsBeacon />
-    <ManagedContent />
     <script>
       let started = false;
       function revealPage() {

@@ -2,14 +2,15 @@
 import type { Education } from '../../lib/types';
 import { dateRange } from '../../lib/format';
 import LucideIcon from '../LucideIcon.astro';
-interface Props { items: Education[]; }
-const { items } = Astro.props;
+import type { SectionMeta } from '../../lib/types';
+interface Props { section?: SectionMeta; items: Education[]; }
+const { items, section } = Astro.props;
 ---
 <section class="section" id="education">
   <div class="container-page">
     <div class="sec-head">
-      <p class="kicker">Education</p>
-      <h2 class="sec-title">Academic background</h2>
+      <p class="kicker">{section?.eyebrow ?? "Education"}</p>
+      <h2 class="sec-title">{section?.heading ?? "Academic background"}</h2>
     </div>
 
     <div class="edu-timeline">

@@ -2,9 +2,12 @@
 import type { SiteSettings, SocialLink } from '../../lib/types';
 import SocialIcon from '../SocialIcon.astro';
 import LucideIcon from '../LucideIcon.astro';
-interface Props { settings: SiteSettings; socials: SocialLink[]; }
-const { settings, socials } = Astro.props;
+import type { SectionMeta } from '../../lib/types';
+import { CONTACT_FORM_ENDPOINT } from '../../lib/content';
+interface Props { section?: SectionMeta; settings: SiteSettings; socials: SocialLink[]; }
+const { settings, socials, section } = Astro.props;
 const email = settings.contact_email;
+const contactEndpoint = CONTACT_FORM_ENDPOINT;
 ---
 <section class="section" id="contact">
   <div class="container-page">
@@ -13,11 +16,10 @@ const email = settings.contact_email;
       <div class="contact-grid">
         <!-- Left: intro + details + socials -->
         <div class="contact-intro">
-          <p class="kicker">Contact</p>
-          <h2 class="contact-title">Get in touch</h2>
+          <p class="kicker">{section?.eyebrow ?? "Contact"}</p>
+          <h2 class="contact-title">{section?.heading ?? 'Get in touch'}</h2>
           <p class="contact-lead">
-            Open to collaboration, community work, internships, and interesting problems.
-            Drop a message and I'll get back to you.
+            {section?.description ?? "Open to collaboration, community work, internships, and interesting problems. Drop a message and I'll get back to you."}
           </p>
 
           <ul class="contact-details">
@@ -49,26 +51,28 @@ const email = settings.contact_email;
         </div>
 
         <!-- Right: the form -->
-        <form class="contact-form" id="contact-form" action="https://formspree.io/f/mregongl" method="POST" novalidate>
+        <form class="contact-form" id="contact-form" action={contactEndpoint || undefined} data-endpoint={contactEndpoint} method="POST" novalidate>
           <div class="cf-row">
             <div class="cf-field">
               <label for="cf-name">Name</label>
-              <input id="cf-name" name="name" type="text" autocomplete="name" required placeholder="Your name" />
+              <input id="cf-name" name="name" type="text" maxlength="100" autocomplete="name" required placeholder="Your name" />
             </div>
             <div class="cf-field">
               <label for="cf-email">Email</label>
-              <input id="cf-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
+              <input id="cf-email" name="email" type="email" maxlength="254" autocomplete="email" required placeholder="you@example.com" />
             </div>
           </div>
           <div class="cf-field">
             <label for="cf-subject">Subject</label>
-            <input id="cf-subject" name="subject" type="text" placeholder="What's this about?" />
+            <input id="cf-subject" name="subject" type="text" maxlength="200" placeholder="What's this about?" />
           </div>
           <div class="cf-field">
             <label for="cf-message">Message</label>
-            <textarea id="cf-message" name="message" rows="5" required placeholder="Tell me a little about it…"></textarea>
+            <textarea id="cf-message" name="message" rows="5" maxlength="5000" required placeholder="Tell me a little about it…"></textarea>
           </div>
-          <button class="btn btn-primary btn-grad" type="submit">
+          <div class="contact-honeypot" aria-hidden="true"><label>Leave this empty<input name="_gotcha" tabindex="-1" autocomplete="off" /></label></div>
+          {contactEndpoint ? null : <p class="cf-note">The message form is temporarily unavailable. Please use the email link.</p>}
+          <button class="btn btn-primary btn-grad" type="submit" disabled={!contactEndpoint}>
             <LucideIcon name="arrow-up-right" size={16} /><span class="submit-label">Send message</span>
           </button>
           <p class="cf-note">Your message goes directly to my inbox.</p>
@@ -80,6 +84,7 @@ const email = settings.contact_email;
 </section>
 
 <style>
+.contact-honeypot { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
 
 .contact { background: transparent; border: 0; border-radius: 0; }
 .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem,7vw,6rem); }
@@ -157,11 +162,14 @@ const email = settings.contact_email;
         invalid[0].focus(); report('Please enter your name, a valid email and a message.', 'err'); return;
       }
       if (!navigator.onLine) { report('You’re offline. Your message is still here; reconnect and try again.', 'err'); return; }
+      if (!form.dataset.endpoint) { report('The message form is unavailable. Please email me directly.', 'err'); return; }
+      const values = new FormData(form);
+      if (String(values.get('_gotcha') || '')) { form.reset(); report('Message sent. Thanks for reaching out!', 'ok'); return; }
       sending = true; submit.disabled = true; form.setAttribute('aria-busy','true'); label.textContent = 'Sending…'; status.textContent = '';
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 20000);
       try {
-        const response = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' }, signal: controller.signal });
+        const response = await fetch(form.dataset.endpoint!, { method: 'POST', body: JSON.stringify({ name: values.get('name'), email: values.get('email'), _replyto: values.get('email'), _subject: values.get('subject') || 'New message from portfolio', subject: values.get('subject') || '', message: values.get('message') }), headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, signal: controller.signal });
         const data = await response.json().catch(() => null);
         if (!response.ok) {
           const message = response.status === 429 ? 'Too many attempts. Please wait a moment and try again.' : data?.errors?.map((item: { message: string }) => item.message).join(' ') || 'Couldn’t send your message. Please try again or email me directly.';

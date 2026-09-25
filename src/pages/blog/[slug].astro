@@ -6,13 +6,14 @@ import NepaliTranslation from '../../components/NepaliTranslation.astro';
 import ReadingBar from '../../components/ReadingBar.astro';
 import LucideIcon from '../../components/LucideIcon.astro';
 import { getSiteSettings, getSocialLinks, getSections } from '../../lib/content';
-import { getMediumPosts, mediumHandleFrom, type MediumPost } from '../../lib/medium';
+import { mediumHandleFrom, type MediumPost } from '../../lib/medium';
+import { getWritingPosts } from '../../lib/writing';
 import { monthYear } from '../../lib/format';
 
 export async function getStaticPaths() {
   const socials = await getSocialLinks();
   const handle = mediumHandleFrom(socials.find((s) => s.platform === 'medium')?.url) ?? 'prashantsubedii';
-  const posts = await getMediumPosts(handle, 24);
+  const posts = await getWritingPosts(handle);
   return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
 }
 
@@ -58,7 +59,7 @@ const blogPostingLd = {
         <div class="post-meta mono">
           {post.date ? <span>{monthYear(post.date)}</span> : null}
           <span>{post.readingMinutes} min read</span>
-          <span>Medium</span>
+          <span>{post.url.startsWith('https://medium.com/') ? 'Medium' : 'Portfolio'}</span>
         </div>
         <h1 class="post-h1">{post.title}</h1>
         {post.tags?.length ? <div class="post-tags">{post.tags.map((t) => <span class="tag-brand">#{t}</span>)}</div> : null}
@@ -67,7 +68,7 @@ const blogPostingLd = {
       <div class="prose" set:html={post.content} />
 
       <div class="post-foot" data-no-translate>
-        <a class="btn btn-primary" href={post.url} target="_blank" rel="noopener">Read on Medium<LucideIcon name="arrow-up-right" size={16} /></a>
+        {post.url.startsWith('https://medium.com/') ? <a class="btn btn-primary" href={post.url} target="_blank" rel="noopener">Read on Medium<LucideIcon name="arrow-up-right" size={16} /></a> : null}
         <a class="btn btn-ghost" href="/blog"><LucideIcon name="book-open" size={16} />More articles</a>
       </div>
     </article>

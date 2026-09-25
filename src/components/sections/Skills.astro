@@ -2,17 +2,18 @@
 import type { SkillCategory } from '../../lib/types';
 import { skillIconUrl, skillInitials } from '../../lib/skillIcons';
 import LucideIcon from '../LucideIcon.astro';
-interface Props { categories: SkillCategory[]; }
-const { categories } = Astro.props;
+import type { SectionMeta } from '../../lib/types';
+interface Props { section?: SectionMeta; categories: SkillCategory[]; }
+const { categories, section } = Astro.props;
 const withSkills = categories.filter((c) => c.skills.length > 0);
 const clamp = (n: number | null | undefined) => Math.max(0, Math.min(100, n ?? 60));
 ---
 <section class="section" id="skills">
   <div class="container-page">
     <div class="sec-head">
-      <p class="kicker">Skills</p>
-      <h2 class="sec-title">Tools &amp; technologies</h2>
-      <p class="sec-lead">Languages, AI/ML, tools, and the soft skills I bring to a team.</p>
+      <p class="kicker">{section?.eyebrow ?? "Skills"}</p>
+      <h2 class="sec-title">{section?.heading ?? "Tools & technologies"}</h2>
+      <p class="sec-lead">{section?.description ?? "Languages, AI/ML, tools, and the soft skills I bring to a team."}</p>
     </div>
 
     {withSkills.length ? (
