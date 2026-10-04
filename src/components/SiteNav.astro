@@ -38,7 +38,11 @@ const contactSection = sections.find((s) => s.key === 'contact' && s.is_visible 
         <svg class="i-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.9 13a9 9 0 0 1-9.9-9.9A9 9 0 1 0 20.9 13Z"/></svg>
       </button>
       <button id="navToggle" class="icon-btn nav-burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <span class="burger-box" aria-hidden="true">
+          <span class="burger-line"></span>
+          <span class="burger-line"></span>
+          <span class="burger-line"></span>
+        </span>
       </button>
     </div>
   </div>
@@ -79,6 +83,18 @@ const contactSection = sections.find((s) => s.key === 'contact' && s.is_visible 
 .nav-contact-btn:hover, .nav-contact-btn.active { border-color: var(--color-border); color: var(--color-bg); background: var(--color-text); }
 .icon-btn { display: grid; place-items: center; width: 2.65rem; height: 2.65rem; color: var(--color-muted); border: 1px solid var(--color-border); border-radius: 50%; background: color-mix(in srgb, var(--color-surface) 55%, transparent); }
 .icon-btn:hover { color: var(--color-text); border-color: var(--color-muted); }
+
+/* Animated hamburger → stylish cross */
+.nav-burger .burger-box { position: relative; display: block; width: 20px; height: 15px; transition: transform .45s cubic-bezier(.66,-0.3,.3,1.4); }
+.nav-burger .burger-line { position: absolute; left: 0; width: 100%; height: 2px; border-radius: 3px; background: currentColor; transform-origin: center; transition: transform .4s cubic-bezier(.66,-0.3,.3,1.4), width .35s ease, opacity .2s ease; }
+.nav-burger .burger-line:nth-child(1) { top: 0; width: 100%; }
+.nav-burger .burger-line:nth-child(2) { top: 6.5px; width: 62%; }
+.nav-burger .burger-line:nth-child(3) { top: 13px; width: 82%; }
+.nav-burger[aria-expanded="true"] .burger-box { transform: rotate(180deg); }
+.nav-burger[aria-expanded="true"] .burger-line:nth-child(1) { width: 100%; transform: translateY(6.5px) rotate(47deg); }
+.nav-burger[aria-expanded="true"] .burger-line:nth-child(2) { width: 0; opacity: 0; transform: scaleX(0); }
+.nav-burger[aria-expanded="true"] .burger-line:nth-child(3) { width: 100%; transform: translateY(-6.5px) rotate(-47deg); }
+@media(prefers-reduced-motion: reduce) { .nav-burger .burger-box, .nav-burger .burger-line { transition: none; } }
 .mobile-menu { border-top: 1px solid var(--color-border); background: color-mix(in srgb, var(--color-bg) 96%, transparent); max-height: calc(100dvh - 4.5rem); overflow-y: auto; }
 .mobile-menu nav { display: grid; padding: .5rem 1.25rem 1rem; }
 .mobile-link { padding: .85rem .5rem; color: var(--color-muted); border-bottom: 1px solid var(--color-border); font-size: 1rem; }

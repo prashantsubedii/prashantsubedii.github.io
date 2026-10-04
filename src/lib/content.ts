@@ -142,33 +142,24 @@ const SKILL_CATEGORIES: SkillCategory[] = [
     sk('c-lang', 'k2', 'JavaScript', 70, 2),
     sk('c-lang', 'k3', 'C / C++', 72, 3),
   ]},
-  { id: 'c-front', name: 'Frontend', icon: 'layout', sort_order: 20, skills: [
-    sk('c-front', 'k4', 'HTML & CSS', 86, 1),
-    sk('c-front', 'k5', 'React', 62, 2),
+  { id: 'c-web', name: 'Web Development', icon: 'layout', sort_order: 20, skills: [
+    sk('c-web', 'k4', 'HTML & CSS', 86, 1),
+    sk('c-web', 'k5', 'React', 62, 2),
+    sk('c-web', 'k6', 'Django', 75, 3),
+    sk('c-web', 'k7', 'MySQL / SQL', 74, 4),
   ]},
-  { id: 'c-back', name: 'Backend', icon: 'server', sort_order: 30, skills: [
-    sk('c-back', 'k6', 'Django', 75, 1),
+  { id: 'c-aiml', name: 'AI / ML', icon: 'brain', sort_order: 30, skills: [
+    sk('c-aiml', 'k10', 'Machine Learning (scikit-learn)', 78, 1),
+    sk('c-aiml', 'k11', 'Deep Learning (PyTorch / TensorFlow)', 72, 2),
+    sk('c-aiml', 'k12', 'NLP & LLMs', 68, 3),
+    sk('c-aiml', 'k13', 'Data Analysis (NumPy / Pandas)', 80, 4),
   ]},
-  { id: 'c-db', name: 'Databases', icon: 'database', sort_order: 40, skills: [
-    sk('c-db', 'k7', 'MySQL', 74, 1),
-    sk('c-db', 'k8', 'SQL', 74, 2),
-  ]},
-  { id: 'c-aiml', name: 'AI/ML (learning)', icon: 'brain', sort_order: 50, skills: [
-    sk('c-aiml', 'k9', 'Python for AI / ML', 85, 1),
-    sk('c-aiml', 'k10', 'Machine Learning (scikit-learn)', 78, 2),
-    sk('c-aiml', 'k11', 'Deep Learning (PyTorch / TensorFlow)', 72, 3),
-    sk('c-aiml', 'k12', 'NLP & LLMs', 68, 4),
-    sk('c-aiml', 'k13', 'Data Analysis (NumPy / Pandas)', 80, 5),
-  ]},
-  { id: 'c-tools', name: 'Tools', icon: 'wrench', sort_order: 60, skills: [
+  { id: 'c-tools', name: 'Tools & Practices', icon: 'wrench', sort_order: 40, skills: [
     sk('c-tools', 'k14', 'Git & GitHub', 85, 1),
     sk('c-tools', 'k15', 'Docker & Linux', 70, 2),
-  ]},
-  { id: 'c-soft', name: 'Soft Skills', icon: 'sparkles', sort_order: 70, skills: [
-    sk('c-soft', 'k16', 'Research & Analysis', 80, 1, 'search'),
-    sk('c-soft', 'k17', 'Problem Solving', 82, 2, 'target'),
-    sk('c-soft', 'k18', 'Communication', 80, 3, 'message-circle'),
-    sk('c-soft', 'k19', 'Team Collaboration', 82, 4, 'users'),
+    sk('c-tools', 'k17', 'Problem Solving', 82, 3, 'target'),
+    sk('c-tools', 'k18', 'Communication', 80, 4, 'message-circle'),
+    sk('c-tools', 'k19', 'Team Collaboration', 82, 5, 'users'),
   ]},
 ];
 
